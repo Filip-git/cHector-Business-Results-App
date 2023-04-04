@@ -40,25 +40,28 @@ const styles = StyleSheet.create({
   },
   bottomButtons: {
     alignItems: 'center',
+    justifyContent: 'center',
     width: 243,
   },
   loginButton: {
     backgroundColor: '#4A3780',
     borderRadius: 50,
-    padding: 7
+    height: 56,
   },
   loginButtonText: {
     color: '#ffffff',
     textAlign: 'center',
+    textAlignVertical: 'center',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
+    height:56
   }
 
 
 });
 
 
-const Login = ({navigation}) => {
+export default function Login({ navigation }) {
   return (
     <SafeAreaView>
       <ScrollView
@@ -83,10 +86,12 @@ const Login = ({navigation}) => {
               //TODO: Implement forgot password form
 
             }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
-            <View style={{ width: 243 }}>
+            <View style={{
+              width: 358
+            }}>
               <TouchableOpacity style={styles.loginButton} onPress={() => {
                 //TODO: Implement login on success and failure
-                navigation.navigate('Home');
+                navigation.navigate('cHector');
               }}>
                 <Text style={styles.loginButtonText}>Login</Text>
               </TouchableOpacity>
@@ -99,5 +104,3 @@ const Login = ({navigation}) => {
   )
 }
 
-
-export default Login

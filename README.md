@@ -1,1 +1,0 @@
-# cHector-Business-Results-App
