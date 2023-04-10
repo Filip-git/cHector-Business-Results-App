@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
@@ -75,7 +75,7 @@ export default function Login({ navigation }) {
 
             </TextInput>
 
-            <Text style={{ fontSize: 15, marginBottom: 15 }}>Password: </Text>
+            <Text style={{ fontSize: 15, marginBottom: 15 }}>Pasword: </Text>
             <TextInput style={styles.passInput} autoComplete='off' autoCorrect={false} secureTextEntry={true}>
 
             </TextInput>
@@ -84,7 +84,7 @@ export default function Login({ navigation }) {
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
               //TODO: Implement forgot password form
-
+              Alert.alert("Somethings went wrong","Try again later!");
             }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
             <View style={{
               width: 358
@@ -103,3 +103,4 @@ export default function Login({ navigation }) {
     </SafeAreaView>
   )
 }
+
