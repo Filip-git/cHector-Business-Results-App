@@ -75,7 +75,7 @@ export default function Login({ navigation }) {
 
             </TextInput>
 
-            <Text style={{ fontSize: 15, marginBottom: 15 }}>Pasword: </Text>
+            <Text style={{ fontSize: 15, marginBottom: 15 }}>Password: </Text>
             <TextInput style={styles.passInput} autoComplete='off' autoCorrect={false} secureTextEntry={true}>
 
             </TextInput>
