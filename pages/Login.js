@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
 
 const styles = StyleSheet.create({
@@ -49,19 +50,38 @@ const styles = StyleSheet.create({
     height: 56,
   },
   loginButtonText: {
+    alignItems: 'center',
+    justifyContent: 'center',
     color: '#ffffff',
     textAlign: 'center',
-    textAlignVertical: 'center',
     fontWeight: 'bold',
     fontSize: 16,
-    height:56
-  }
-
-
+    height: 56,
+    lineHeight: 56,
+  },
+  userInputFocused: {
+    borderBottomWidth: 2.5,
+    borderBottomColor: '#4A3780',
+    width: 243,
+    marginBottom: 15,
+    fontSize: 20,
+    padding: 3,
+  },
+  passInputFocused: {
+    borderBottomWidth: 2.5,
+    borderBottomColor: '#4A3780',
+    width: 243,
+    marginBottom: 15,
+    fontSize: 20,
+    padding: 3,
+  },
 });
 
 
 export default function Login({ navigation }) {
+  const [isUserInputFocused, setIsUserInputFocused] = useState(false);
+  const [isPassInputFocused, setIsPassInputFocused] = useState(false);
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -71,20 +91,22 @@ export default function Login({ navigation }) {
           <Text style={styles.loginText}>Login</Text>
           <View style={styles.inputContainer}>
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Username: </Text>
-            <TextInput style={styles.userInput}>
-
-            </TextInput>
+            <TextInput style={isUserInputFocused ? styles.userInputFocused : styles.userInput}
+              onFocus={() => setIsUserInputFocused(true)}
+              onBlur={() => setIsUserInputFocused(false)}
+            />
 
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Password: </Text>
-            <TextInput style={styles.passInput} autoComplete='off' autoCorrect={false} secureTextEntry={true}>
-
-            </TextInput>
+            <TextInput style={isPassInputFocused ? styles.passInputFocused : styles.passInput}
+              autoComplete='off' autoCorrect={false} secureTextEntry={true}
+              onFocus={() => setIsPassInputFocused(true)}
+              onBlur={() => setIsPassInputFocused(false)}
+            />
           </View>
-
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
               //TODO: Implement forgot password form
-              Alert.alert("Somethings went wrong","Try again later!");
+              Alert.alert("Somethings went wrong", "Try again later!");
             }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
             <View style={{
               width: 358
