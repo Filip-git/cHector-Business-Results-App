@@ -1,6 +1,6 @@
 # cHector-Business-Results-App
 
-Frontend side of the cHector application
+Frontend of the cHector application made in React Native
 
 ## Prerequisites
 
