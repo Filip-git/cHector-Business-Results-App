@@ -21,7 +21,7 @@ export default function KPIScreen() {
       <ScrollView>
         <View style={styles.container}>
           <View>
-            <Text style={styles.naslov}>Sales per year</Text>
+            <Text style={styles.title}>Sales per year</Text>
             <BarChart
               style={styles.barChartStyle}
               data={{
@@ -37,7 +37,7 @@ export default function KPIScreen() {
           </View>
 
           <View>
-            <Text style={styles.naslov}>Website traffic</Text>
+            <Text style={styles.title}>Website traffic</Text>
             <BarChart
               style={styles.barChartStyle}
               data={{
@@ -74,11 +74,13 @@ const styles = StyleSheet.create({
     backgroundGradientFromOpacity: 15,
     backgroundGradientTo: '#fff',
     backgroundGradientToOpacity: 0.5,
+    fillShadowGradient:'#8670c2',
+    fillShadowGradientOpacity:1,
     color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.55,
   },
-  naslov: {
+  title: {
     textAlign: 'center',
   },
 }

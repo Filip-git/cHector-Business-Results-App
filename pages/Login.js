@@ -106,7 +106,7 @@ export default function Login({ navigation }) {
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
               //TODO: Implement forgot password form
-              Alert.alert("Somethings went wrong", "Try again later!");
+              Alert.alert("Something went wrong", "Try again later!");
             }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
             <View style={{
               width: 358
