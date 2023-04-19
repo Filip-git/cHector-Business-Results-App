@@ -3,9 +3,8 @@ import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
-export default function Account() {
+export default function Account({ navigation }) {
   const screenWidth = Dimensions.get('window').width;
-  const screenHeight = Dimensions.get('window').height;
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -88,7 +87,7 @@ export default function Account() {
           }}>
             <TouchableOpacity style={styles.editButton} onPress={() => {
               //TODO: Navigate to edit account form
-              Alert.alert("Something went wrong", "Try again later!");
+              navigation.navigate('EditAccount');
             }}>
               <Text style={styles.editButtonText}>Edit profile</Text>
             </TouchableOpacity>

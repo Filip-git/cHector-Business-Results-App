@@ -9,65 +9,76 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Login from '../pages/Login';
 import Home from '../pages/Home';
 import KPIScreen from '../pages/KPIScreen';
-import Goals from '../pages/Goals';
-import Account from '../pages/Account';
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-})
-
+import Goals from '../pages/GoalsPages/Goals';
+import Account from '../pages/AccountPages/Account';
+import EditAccount from '../pages/AccountPages/EditAccount';
+import AddGoal from '../pages/GoalsPages/AddGoal';
 
 
 export default function Navigator() {
-    const Stack = createNativeStackNavigator();
-    const BottomTab = createBottomTabNavigator();
-    function Tabs() {
-        return (<BottomTab.Navigator>
-          <BottomTab.Group screenOptions={{
-            tabBarItemStyle:{
-              marginLeft:25,
-              marginRight:25,
-              marginBottom: 2,
-              borderRadius: 10,
-            },
-            tabBarShowLabel: false,
-            headerStyle: {
-              backgroundColor: '#4A3780',
-            },
-            headerTitleAlign: 'center',
-            headerTitleStyle: { fontWeight: 'bold', fontSize: 25 },
-            headerTintColor: '#ffffff',
-            tabBarStyle: {
-              backgroundColor: '#4A3780',
-              padding: 3
-            },
-            tabBarActiveBackgroundColor: '#c5b0ff4d',
-            tabBarActiveTintColor: '#ffffff',
-            tabBarInactiveTintColor: '#ffffff',
-          }} >
-            
-            <BottomTab.Screen name='Home' component={Home} options={{
-              tabBarIcon: ({color,size}) => (<Ionicons name='home-outline' color={color} size={size} />),
-            }} />
-            <BottomTab.Screen name='KPIScreen' component={KPIScreen} options={{
-              tabBarIcon: ({color,size}) => (<Octicons name='graph' color={color} size={size} />),
-            }} />
-            <BottomTab.Screen name='Goals' component={Goals} options={{
-              tabBarIcon: ({color,size}) => (<FontAwesome5 name='tasks' color={color} size={size} />),
-            }} />
-            <BottomTab.Screen name='Account' component={Account} options={{
-              tabBarIcon: ({color,size}) => (<MaterialCommunityIcons name='account-circle-outline' color={color} size={size} />),
-            }} />
-    
-          </BottomTab.Group>
-        </BottomTab.Navigator>);
-      }
+  const Stack = createNativeStackNavigator();
+  const BottomTab = createBottomTabNavigator();
+  function Tabs() {
+    return (<BottomTab.Navigator>
+      <BottomTab.Group screenOptions={{
+        tabBarItemStyle: {
+          marginLeft: 25,
+          marginRight: 25,
+          marginBottom: 2,
+          borderRadius: 10,
+        },
+        tabBarShowLabel: false,
+        headerStyle: {
+          backgroundColor: '#4A3780',
+        },
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontWeight: 'bold', fontSize: 25 },
+        headerTintColor: '#ffffff',
+        tabBarStyle: {
+          backgroundColor: '#4A3780',
+          padding: 3
+        },
+        tabBarActiveBackgroundColor: '#c5b0ff4d',
+        tabBarActiveTintColor: '#ffffff',
+        tabBarInactiveTintColor: '#ffffff',
+      }} >
+
+        <BottomTab.Screen name='Home' component={Home} options={{
+          tabBarIcon: ({ color, size }) => (<Ionicons name='home-outline' color={color} size={size} />),
+        }} />
+        <BottomTab.Screen name='KPIScreen' component={KPIScreen} options={{
+          tabBarIcon: ({ color, size }) => (<Octicons name='graph' color={color} size={size} />),
+        }} />
+        <BottomTab.Screen name='Goals' component={GoalsStack} options={{
+          tabBarIcon: ({ color, size }) => (<FontAwesome5 name='tasks' color={color} size={size} />),
+        }} />
+        <BottomTab.Screen name='Account' component={AccountStack} options={{
+          tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name='account-circle-outline' color={color} size={size} />),
+        }} />
+
+      </BottomTab.Group>
+    </BottomTab.Navigator>);
+  }
+  function AccountStack() {
+    return (
+      <Stack.Navigator>
+        <Stack.Group>
+          <Stack.Screen name='AccountStack' component={Account} options={{headerShown:false }}  />
+          <Stack.Screen name='EditAccount' component={EditAccount} options={{headerShown:false }} />
+        </Stack.Group>
+      </Stack.Navigator>
+    );
+  }
+  function GoalsStack() {
+    return (
+      <Stack.Navigator>
+        <Stack.Group>
+          <Stack.Screen name='GoalsStack' component={Goals} options={{headerShown:false }}  />
+          <Stack.Screen name='AddGoal' component={AddGoal} options={{headerShown:false }}  />
+        </Stack.Group>
+      </Stack.Navigator>
+    );
+  }
   return (
     <>
       <NavigationContainer>
