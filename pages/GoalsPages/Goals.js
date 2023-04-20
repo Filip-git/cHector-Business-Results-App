@@ -9,29 +9,25 @@ export default function Goals({ navigation }) {
       justifyContent: 'center',
     },
     addButton: {
+      width: 350,
+      margin: 10,
+      padding: 5,
       backgroundColor: '#4A3780',
-      borderRadius: 50,
-      height: 56,
-      marginTop: 55,
-      marginBottom: 15,
+      borderRadius: 10,
+      borderWidth: 1,
+      alignItems: 'center',
     },
     addButtonText: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#ffffff',
-      textAlign: 'center',
-      fontWeight: 'bold',
-      fontSize: 16,
-      height: 56,
-      lineHeight: 56,
-    }
+      color: 'white',
+      fontSize: 22
+    },
   });
 
   return (
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
-          <Text>Goals</Text>
+         
           <View style={{
             width: 358
           }}>
