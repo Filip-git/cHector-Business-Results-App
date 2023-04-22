@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const styles = StyleSheet.create({
   container: {
@@ -38,6 +39,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 20,
     padding: 3,
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    columnGap:5,
   },
   bottomButtons: {
     alignItems: 'center',
@@ -74,6 +80,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 20,
     padding: 3,
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    columnGap:5,
   },
 });
 
@@ -81,7 +92,9 @@ const styles = StyleSheet.create({
 export default function Login({ navigation }) {
   const [isUserInputFocused, setIsUserInputFocused] = useState(false);
   const [isPassInputFocused, setIsPassInputFocused] = useState(false);
-
+  const [hidePass, setHidePass] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   return (
     <SafeAreaView>
       <ScrollView
@@ -91,17 +104,37 @@ export default function Login({ navigation }) {
           <Text style={styles.loginText}>Login</Text>
           <View style={styles.inputContainer}>
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Username: </Text>
-            <TextInput style={isUserInputFocused ? styles.userInputFocused : styles.userInput}
-              onFocus={() => setIsUserInputFocused(true)}
-              onBlur={() => setIsUserInputFocused(false)}
-            />
+            <View style={isUserInputFocused ? styles.userInputFocused : styles.userInput}>
+              <TextInput
+                onFocus={() => setIsUserInputFocused(true)}
+                onBlur={() => setIsUserInputFocused(false)}
+                onChangeText={(text) => setUsername(text)}
+                value={username}
+                placeholder='Enter your username'
+                style={{
+                  width: 210, fontSize: 20,
+                }}
+              />
+            </View>
+
 
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Password: </Text>
-            <TextInput style={isPassInputFocused ? styles.passInputFocused : styles.passInput}
-              autoComplete='off' autoCorrect={false} secureTextEntry={true}
-              onFocus={() => setIsPassInputFocused(true)}
-              onBlur={() => setIsPassInputFocused(false)}
-            />
+            <View style={isPassInputFocused ? styles.passInputFocused : styles.passInput}>
+              <TextInput
+                autoComplete='off' autoCorrect={false} secureTextEntry={hidePass}
+                onFocus={() => setIsPassInputFocused(true)}
+                onBlur={() => setIsPassInputFocused(false)}
+                onChangeText={(text) => setPassword(text)}
+                value={password}
+                placeholder='Enter your password'
+                style={{
+                  width: 210, fontSize: 20,
+                }}
+              />
+              <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
+                <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
