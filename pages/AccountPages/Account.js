@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View, ScrollView, Dimensions, TouchableOpacity,Alert } from 'react-native'
+import { StyleSheet, SafeAreaView, Text, View, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -57,7 +57,7 @@ export default function Account({ navigation }) {
         <View style={styles.container}>
           <View>
             {/* TODO: Repalce icon with profile image */}
-            <MaterialCommunityIcons name='account-box-outline' color={'#4A3780'} size={125}/>
+            <MaterialCommunityIcons name='account-box-outline' color={'#4A3780'} size={125} />
           </View>
           <View style={styles.accountDetailsWrapper}>
             <View style={styles.accountDetails}>
@@ -66,12 +66,12 @@ export default function Account({ navigation }) {
 
             </View>
             <View style={styles.accountDetails}>
-              <MaterialIcons name='date-range' color={'#4A3780'} size={35} />
+              <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
               <Text style={styles.accountDetailsText}>062/328-552</Text>
 
             </View>
             <View style={styles.accountDetails}>
-              <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
+              <MaterialIcons name='date-range' color={'#4A3780'} size={35} />
               <Text style={styles.accountDetailsText}>January 29th 1977</Text>
 
             </View>
