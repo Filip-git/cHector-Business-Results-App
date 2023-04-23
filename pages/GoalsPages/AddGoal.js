@@ -52,18 +52,23 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     btnContainer: {
-        width: 350,
-        margin: 10,
-        padding: 5,
         backgroundColor: '#4A3780',
-        borderRadius: 10,
-        borderWidth: 1,
-        alignItems: 'center',
+        borderRadius: 50,
+        height: 56,
+        marginTop: 55,
+        marginBottom: 15,
+        width: 358
     },
 
     txtSave: {
-        color: 'white',
-        fontSize: 22
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#ffffff',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 16,
+        height: 56,
+        lineHeight: 56,
     }
 })
 
