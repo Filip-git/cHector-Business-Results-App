@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,6 +12,8 @@ import Goals from '../pages/GoalsPages/Goals';
 import Account from '../pages/AccountPages/Account';
 import EditAccount from '../pages/AccountPages/EditAccount';
 import AddGoal from '../pages/GoalsPages/AddGoal';
+import Tasks from '../pages/TaskPages/Tasks';
+import AddTask from '../pages/TaskPages/AddTask';
 
 
 export default function Navigator() {
@@ -22,8 +23,10 @@ export default function Navigator() {
     return (<BottomTab.Navigator>
       <BottomTab.Group screenOptions={{
         tabBarItemStyle: {
-          marginLeft: 25,
-          marginRight: 25,
+          paddingLeft: 25,
+          paddingRight: 25,
+          marginLeft: 15,
+          marginRight: 15,
           marginBottom: 2,
           borderRadius: 10,
         },
@@ -50,6 +53,9 @@ export default function Navigator() {
           tabBarIcon: ({ color, size }) => (<Octicons name='graph' color={color} size={size} />),
         }} />
         <BottomTab.Screen name='Goals' component={GoalsStack} options={{
+          tabBarIcon: ({ color, size }) => (<FontAwesome5 name='medal' color={color} size={size} />),
+        }} />
+        <BottomTab.Screen name='Tasks' component={TasksStack} options={{
           tabBarIcon: ({ color, size }) => (<FontAwesome5 name='tasks' color={color} size={size} />),
         }} />
         <BottomTab.Screen name='Account' component={AccountStack} options={{
@@ -63,8 +69,8 @@ export default function Navigator() {
     return (
       <Stack.Navigator>
         <Stack.Group>
-          <Stack.Screen name='AccountStack' component={Account} options={{headerShown:false }}  />
-          <Stack.Screen name='EditAccount' component={EditAccount} options={{headerShown:false }} />
+          <Stack.Screen name='AccountStack' component={Account} options={{ headerShown: false }} />
+          <Stack.Screen name='EditAccount' component={EditAccount} options={{ headerShown: false }} />
         </Stack.Group>
       </Stack.Navigator>
     );
@@ -73,8 +79,18 @@ export default function Navigator() {
     return (
       <Stack.Navigator>
         <Stack.Group>
-          <Stack.Screen name='GoalsStack' component={Goals} options={{headerShown:false }}  />
-          <Stack.Screen name='AddGoal' component={AddGoal} options={{headerShown:false }}  />
+          <Stack.Screen name='GoalsStack' component={Goals} options={{ headerShown: false }} />
+          <Stack.Screen name='AddGoal' component={AddGoal} options={{ headerShown: false }} />
+        </Stack.Group>
+      </Stack.Navigator>
+    );
+  }
+  function TasksStack() {
+    return (
+      <Stack.Navigator>
+        <Stack.Group>
+          <Stack.Screen name='TasksStack' component={Tasks} options={{ headerShown: false }} />
+          <Stack.Screen name='AddTask' component={AddTask} options={{ headerShown: false }} />
         </Stack.Group>
       </Stack.Navigator>
     );

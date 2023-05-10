@@ -1,11 +1,7 @@
-import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native'
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Keyboard } from 'react-native'
 import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { Modal, Portal, Provider } from 'react-native-paper'
-import DatePicker from 'react-native-modern-datepicker'
-import { getFormatedDate } from 'react-native-modern-datepicker'
+
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -27,6 +23,18 @@ const styles = StyleSheet.create({
     },
     accountEditInputWrapper: {
         borderBottomColor: '#4A3780',
+        borderBottomWidth: 2,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignSelf: 'stretch',
+        columnGap: 35,
+        margin: 15,
+        height: 55,
+    },
+    accountEditInputWrapperError: {
+        borderBottomColor: '#cc0000',
         borderBottomWidth: 2,
         display: 'flex',
         alignItems: 'center',
@@ -87,162 +95,188 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         columnGap: 35,
+    },
+    errorStyle: {
+        color: '#cc0000',
+        fontSize: 12,
+        fontWeight: 'bold',
+        marginLeft: 15
     }
 })
 
 
 export default function EditAccount() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPass, setConfirm] = useState("");
+
+    const [userEdit, setUserEdit] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPass: ''
+    });
+    const [errors, setErrors] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPass: ''
+    });
     const [hidePass, setHidePass] = useState(true);
     const [hidePassConf, setHidePassConf] = useState(true);
-    const [date, setDate] = useState(new Date);
-    const [show, setShow] = useState(false);
-    const [dateText, setDateText] = useState('Click here to pick a date');
 
-    const showModal = () => {
-        setShow(!show);
+    const validate = () => {
+        Keyboard.dismiss();
+        var valid = true;
+        if (!userEdit.name) {
+            handleError('Please enter your name !', 'name');
+            valid = false;
+        } 
+        if (!userEdit.phone) {
+            handleError('Please enter your phone number !', 'phone');
+            valid = false;
+        } 
+        if(!userEdit.email){
+            handleError('Please enter your email !', 'email');
+            valid = false;
+        } else if(!userEdit.email.match(/\S+@\S+\.\S+/)){
+            handleError('Please enter a valid email !', 'email');
+            valid = false;
+        }
+        if (!userEdit.password) {
+            handleError('Please enter a new password !', 'password');
+            valid = false;
+        } else if(userEdit.password !== userEdit.confirmPass){
+            handleError('Password and confirmation don\'t match !', 'password');
+            valid = false;
+        }
+
+        if (!userEdit.confirmPass) {
+            handleError('Please confirm your password !', 'confirmPass');
+            valid = false;
+        } else if(userEdit.confirmPass !== userEdit.password){
+            handleError('Password and confirmation don\'t match !', 'confirmPass');
+            valid = false;
+        }
+        if(valid){
+            //TODO: Send request
+            
+
+            handleError(null,'name');
+            handleError(null,'phone');
+            handleError(null,'email');
+            handleError(null,'password');
+            handleError(null,'confirmPass');
+
+            Alert.alert("Edit successful","You have successfully edited your profile !")
+        }
+
     }
-    const showModalCancel = () => {
-        setDateText('Click here to pick a date');
-        setShow(!show);
+    const handleChange = (text, field) => {
+        setUserEdit((prevState) => ({ ...prevState, [field]: text }))
     }
-    const onChange = (selectedDate) => {
-        const formated = selectedDate.replaceAll('/','-');
-        const currentDate = new Date(formated);
-        setDate(currentDate);
-        setDateText(selectedDate);
+    const handleError = (errorMessage, field) => {
+        setErrors((prevState) => ({ ...prevState, [field]: errorMessage }))
     }
 
     return (
-        <Provider>
             <ScrollView>
                 <View style={styles.container}>
                     <View>
                         <Text style={styles.headerText}>Edit Your Profile</Text>
                     </View>
                     <View style={styles.accountEditWrapper}>
-                        <View style={styles.accountEditInputWrapper}>
+                        <View style={errors.name ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='account-outline' color={'#4A3780'} size={35} />
                             <TextInput
-                                onChangeText={(text) => setName(text)}
-                                value={name}
+                                onChangeText={(text) => handleChange(text, 'name')}
+                                value={userEdit.name}
                                 placeholder='e.g. John Doe'
                                 style={styles.accountInputField}
+                                onFocus={()=> {
+                                    handleError(null,'name');
+                                }}
                             />
                         </View>
-                        <View style={styles.accountEditInputWrapper}>
-                            <MaterialIcons name='date-range' color={'#4A3780'} size={35} />
-                            <TouchableOpacity onPress={() => showModal()}>
-                                <Text style={styles.accountInputField}>
-                                    {dateText}
-                                </Text>
-                            </TouchableOpacity>
-                            <Portal>
-                                <Modal
-                                    animationType='slide'
-                                    transparent={true}
-                                    visible={show}
-                                >
-                                    <View >
-                                        <View style={styles.modalView}>
-                                            <DatePicker
-                                                mode='calendar'
-                                                selected={getFormatedDate(date,'DD/MM/YYYY')}
-                                                onDateChange={onChange}
-                                                options={{
-                                                    textHeaderColor: '#4A3780',
-                                                    textDefaultColor: '#4A3780',
-                                                    selectedTextColor: '#ffffff',
-                                                    mainColor: '#4A3780',
-                                                    textSecondaryColor: '#4A3780',
-                                                }}
-                                            />
-                                            <View style={styles.calendarBtns}>
-                                                <TouchableOpacity onPress={showModal}>
-                                                    <Text style={{
-                                                        color: '#4A3780',
-                                                        fontSize: 18,
-                                                        fontWeight: 'bold'
-                                                    }}>Confirm</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={showModalCancel}>
-                                                    <Text style={{
-                                                        color: '#4A3780',
-                                                        fontSize: 18,
-                                                        fontWeight: 'bold'
-                                                    }}>Close</Text>
-                                                </TouchableOpacity>
-                                            </View>
+                        {errors.name && <Text style={styles.errorStyle}>{errors.name}</Text>}
 
-                                        </View>
-                                    </View>
-
-                                </Modal>
-                            </Portal>
-
-                        </View>
                         <View style={styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
                             <TextInput
-                                onChangeText={(text) => setPhone(text)}
-                                value={phone}
+                                keyboardType='numeric'
+                                onChangeText={(text) => handleChange(text, 'phone')}
+                                value={userEdit.phone}
                                 placeholder='e.g. 000/000-000'
                                 style={styles.accountInputField}
+                                onFocus={()=> {
+                                    handleError(null,'phone');
+                                }}
                             />
                         </View>
+                        {errors.phone  && <Text style={styles.errorStyle}>{errors.phone}</Text>}
+
                         <View style={styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='email-outline' color={'#4A3780'} size={35} />
                             <TextInput
-                                onChangeText={(text) => setEmail(text)}
-                                value={email}
+                                onChangeText={(text) => handleChange(text, 'email')}
+                                value={userEdit.email}
                                 placeholder='e.g. john.doe@gmail.com'
                                 style={styles.accountInputField}
+                                onFocus={()=> {
+                                    handleError(null,'email');
+                                }}
                             />
                         </View>
+                        {errors.email  && <Text style={styles.errorStyle}>{errors.email}</Text>}
+
                         <View style={styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='lock-outline' color={'#4A3780'} size={35} />
                             <TextInput
-                                onChangeText={(text) => setPassword(text)}
-                                value={password}
+                                onChangeText={(text) => handleChange(text, 'password')}
+                                value={userEdit.password}
                                 placeholder='Enter password'
                                 style={styles.accountInputPassField}
                                 secureTextEntry={hidePass}
+                                onFocus={()=> {
+                                    handleError(null,'password');
+                                }}
                             />
                             <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
                                 <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
                             </TouchableOpacity>
                         </View>
+                        {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
+
                         <View style={styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='lock-check-outline' color={'#4A3780'} size={35} />
                             <TextInput
-                                onChangeText={(text) => setConfirm(text)}
-                                value={confirmPass}
+                                onChangeText={(text) => handleChange(text, 'confirmPass')}
+                                value={userEdit.confirmPass}
                                 placeholder='Confirm password'
                                 style={styles.accountInputPassField}
                                 secureTextEntry={hidePassConf}
+                                onFocus={()=> {
+                                    handleError(null,'confirmPass');
+                                }}
                             />
                             <TouchableOpacity onPress={() => setHidePassConf(!hidePassConf)}>
                                 <MaterialCommunityIcons name={hidePassConf ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
                             </TouchableOpacity>
                         </View>
+                        {errors.confirmPass !== null && <Text style={styles.errorStyle}>{errors.confirmPass}</Text>}
+
                     </View>
                     <View style={{
                         width: 358
                     }}>
                         <TouchableOpacity style={styles.submitButton} onPress={() => {
                             //TODO: Send request and update user data
-                            Alert.alert("Something went wrong", "Try again later!");
+                            validate();
                         }}>
                             <Text style={styles.submitButtonText}>Save changes</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
-        </Provider>
 
     )
 }

@@ -28,7 +28,6 @@ export default function Goals({ navigation }) {
   });
 
   return (
-    <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
 
@@ -36,7 +35,7 @@ export default function Goals({ navigation }) {
             width: 358
           }}>
             <TouchableOpacity style={styles.addButton} onPress={() => {
-              //TODO: Navigate to edit account form
+              //TODO: Navigate to add goal form
               navigation.navigate('AddGoal');
             }}>
               <Text style={styles.addButtonText}>Add goals</Text>
@@ -44,6 +43,5 @@ export default function Goals({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
   )
 }
