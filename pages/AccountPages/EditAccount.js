@@ -199,7 +199,7 @@ export default function EditAccount() {
                         </View>
                         {errors.name && <Text style={styles.errorStyle}>{errors.name}</Text>}
 
-                        <View style={styles.accountEditInputWrapper}>
+                        <View style={errors.phone ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
                             <TextInput
                                 keyboardType='numeric'
@@ -214,7 +214,7 @@ export default function EditAccount() {
                         </View>
                         {errors.phone  && <Text style={styles.errorStyle}>{errors.phone}</Text>}
 
-                        <View style={styles.accountEditInputWrapper}>
+                        <View style={errors.email ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='email-outline' color={'#4A3780'} size={35} />
                             <TextInput
                                 onChangeText={(text) => handleChange(text, 'email')}
@@ -228,7 +228,7 @@ export default function EditAccount() {
                         </View>
                         {errors.email  && <Text style={styles.errorStyle}>{errors.email}</Text>}
 
-                        <View style={styles.accountEditInputWrapper}>
+                        <View style={errors.password ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='lock-outline' color={'#4A3780'} size={35} />
                             <TextInput
                                 onChangeText={(text) => handleChange(text, 'password')}
@@ -246,7 +246,7 @@ export default function EditAccount() {
                         </View>
                         {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
 
-                        <View style={styles.accountEditInputWrapper}>
+                        <View style={errors.confirmPass ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                             <MaterialCommunityIcons name='lock-check-outline' color={'#4A3780'} size={35} />
                             <TextInput
                                 onChangeText={(text) => handleChange(text, 'confirmPass')}
