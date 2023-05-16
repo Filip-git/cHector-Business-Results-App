@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert, Keyboard } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const styles = StyleSheet.create({
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   userInput: {
     borderBottomWidth: 2,
-    borderBottomColor: '#000000',
+    borderBottomColor: '#4A3780',
     width: 243,
     marginBottom: 15,
     fontSize: 20,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   passInput: {
     borderBottomWidth: 2,
-    borderBottomColor: '#000000',
+    borderBottomColor: '#4A3780',
     width: 243,
     marginBottom: 15,
     fontSize: 20,
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    columnGap:5,
+    columnGap: 5,
   },
   bottomButtons: {
     alignItems: 'center',
@@ -65,17 +65,17 @@ const styles = StyleSheet.create({
     height: 56,
     lineHeight: 56,
   },
-  userInputFocused: {
+  userInputError: {
     borderBottomWidth: 2.5,
-    borderBottomColor: '#4A3780',
+    borderBottomColor: '#cc0000',
     width: 243,
     marginBottom: 15,
     fontSize: 20,
     padding: 3,
   },
-  passInputFocused: {
+  passInputError: {
     borderBottomWidth: 2.5,
-    borderBottomColor: '#4A3780',
+    borderBottomColor: '#cc0000',
     width: 243,
     marginBottom: 15,
     fontSize: 20,
@@ -84,17 +84,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    columnGap:5,
+    columnGap: 5,
   },
+  errorStyle: {
+    color: '#cc0000',
+    fontSize: 12,
+    fontWeight: 'bold',
+}
 });
 
 
 export default function Login({ navigation }) {
-  const [isUserInputFocused, setIsUserInputFocused] = useState(false);
-  const [isPassInputFocused, setIsPassInputFocused] = useState(false);
+
   const [hidePass, setHidePass] = useState(true);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [user, setUser] = useState({
+    username: '',
+    password: ''
+  })
+  const [errors, setErrors] = useState({
+    username: '',
+    password: ''
+  })
+
+  const handleChange = (text, field) => {
+    setUser((prevState) => ({ ...prevState, [field]: text }));
+  }
+  const handleError = (text, field) => {
+    setErrors((prevState) => ({ ...prevState, [field]: text }));
+  }
+  const validate = () => {
+	  Keyboard.dismiss();
+    var valid = true;
+
+    if(!user.username){
+      handleError('Please enter your username !','username');
+      valid = false;
+    }
+    if(!user.password){
+      handleError('Please enter your password !','password');
+      valid = false;
+    }
+
+    if(valid){
+      //TODO: Implement login on success and failure
+      
+      navigation.navigate('cHector');
+
+    }
+  }
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -104,28 +143,27 @@ export default function Login({ navigation }) {
           <Text style={styles.loginText}>Login</Text>
           <View style={styles.inputContainer}>
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Username: </Text>
-            <View style={isUserInputFocused ? styles.userInputFocused : styles.userInput}>
+            <View style={errors.username ? styles.userInputError : styles.userInput}>
               <TextInput
-                onFocus={() => setIsUserInputFocused(true)}
-                onBlur={() => setIsUserInputFocused(false)}
-                onChangeText={(text) => setUsername(text)}
-                value={username}
+                onFocus={() => handleError(null,'username')}
+                onChangeText={(text) => handleChange(text,'username')}
+                value={user.username}
                 placeholder='Enter your username'
                 style={{
                   width: 210, fontSize: 20,
                 }}
               />
             </View>
+            {errors.username && <Text style={styles.errorStyle}>{errors.username}</Text>}
 
 
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Password: </Text>
-            <View style={isPassInputFocused ? styles.passInputFocused : styles.passInput}>
+            <View style={errors.password ? styles.passInputError : styles.passInput}>
               <TextInput
                 autoComplete='off' autoCorrect={false} secureTextEntry={hidePass}
-                onFocus={() => setIsPassInputFocused(true)}
-                onBlur={() => setIsPassInputFocused(false)}
-                onChangeText={(text) => setPassword(text)}
-                value={password}
+                onFocus={() => handleError(null,'password')}
+                onChangeText={(text) => handleChange(text,'password')}
+                value={user.password}
                 placeholder='Enter your password'
                 style={{
                   width: 210, fontSize: 20,
@@ -135,6 +173,8 @@ export default function Login({ navigation }) {
                 <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
               </TouchableOpacity>
             </View>
+            {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
+
           </View>
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
@@ -145,8 +185,7 @@ export default function Login({ navigation }) {
               width: 358
             }}>
               <TouchableOpacity style={styles.loginButton} onPress={() => {
-                //TODO: Implement login on success and failure
-                navigation.navigate('cHector');
+                validate();
               }}>
                 <Text style={styles.loginButtonText}>Login</Text>
               </TouchableOpacity>
