@@ -5,6 +5,8 @@ import DatePicker from 'react-native-modern-datepicker';
 import { getFormatedDate } from 'react-native-modern-datepicker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
+import { SelectList } from 'react-native-dropdown-select-list'
+
 
 
 const styles = StyleSheet.create({
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
     },
     inpContainer: {
         width: 350,
-        marginBottom: 7,
+        marginBottom: 15,
 
     },
     titleInp: {
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
     txt: {
         fontSize: 15,
         fontWeight: 'bold',
+        padding: 2,
     },
     btnContainer: {
         backgroundColor: '#4A3780',
@@ -153,83 +156,83 @@ const styles = StyleSheet.create({
         color: '#cc0000',
         fontSize: 12,
         fontWeight: 'bold',
-    }
+    },
 })
+
+const data = [
+    { key: '1', value: 'Meeting' },
+    { key: '2', value: 'Prototype' },
+    { key: '3', value: 'Training' },
+    { key: '4', value: 'Document' },
+];
 
 export default function AddGoal() {
     const today = new Date();
-
-    const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD')
+    const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD');
 
     const [show, setShow] = useState(false);
-
-
     const [insertGoal, setInsertGoal] = useState({
         title: '',
         date: 'Click here to pick a date',
         description: ''
-    })
+    });
     const [errors, setErrors] = useState({
         title: '',
         date: '',
         description: ''
-    })
+    });
 
     const showModal = () => {
         setShow(!show);
-        handleError(null,'date');
-    }
+        handleError(null, 'date');
+    };
+
     const showModalCancel = () => {
-        setInsertGoal((prevState)=>({...prevState,['date']:'Click here to pick a date'}))
+        setInsertGoal((prevState) => ({ ...prevState, date: 'Click here to pick a date' }));
         setShow(!show);
-    }
+    };
 
     const handleDateChange = (selectedDate) => {
         const formated = selectedDate.replaceAll('/', '-');
         const currentDate = new Date(formated);
         const formatedDate = getFormatedDate(currentDate, 'DD/MM/YYYY');
-        setInsertGoal((prevState) => ({ ...prevState, ['date']: formatedDate }))
-    }
+        setInsertGoal((prevState) => ({ ...prevState, date: formatedDate }));
+    };
 
     const handleChange = (text, field) => {
         setInsertGoal((prevState) => ({ ...prevState, [field]: text }));
-    }
+    };
 
     const handleError = (text, field) => {
         setErrors((prevState) => ({ ...prevState, [field]: text }));
-    }
+    };
 
     const validate = () => {
         Keyboard.dismiss();
-        var valid = true;
+        let valid = true;
 
         if (!insertGoal.title) {
-            handleError('Please enter a goal title !', 'title');
+            handleError('Please enter a goal title!', 'title');
             valid = false;
         }
         if (!insertGoal.description) {
-            handleError('PLease enter a description for the goal !', 'description');
+            handleError('Please enter a description for the goal!', 'description');
             valid = false;
         }
         if (insertGoal.date === 'Click here to pick a date') {
-            handleError('Please pick a deadline for the goal !', 'date');
+            handleError('Please pick a deadline for the goal!', 'date');
             valid = false;
         }
 
         if (valid) {
-            //TODO: Send request
-
-
+            // TODO: Send request
             handleError(null, 'title');
             handleError(null, 'description');
             handleError(null, 'date');
 
-
-
-            Alert.alert('New goal added', 'You have successfully added a new goal !');
+            Alert.alert('New goal added', 'You have successfully added a new goal!');
         }
-
-    }
+    };
 
     return (
         <Provider>
@@ -248,8 +251,19 @@ export default function AddGoal() {
                     </View>
                     {errors.title && <Text style={styles.errorStyle}>{errors.title}</Text>}
 
+                    <View style={styles.inpContainer}>
+                        <Text style={styles.txt}>Category</Text>
+                        <View>
+                            <SelectList
+                                setSelected={() => { }}
+                                data={data}
+                                save="value"
+                            />
+                        </View>
+                    </View>
+
                     <View style={errors.date ? styles.wrapperError : styles.wrapper}>
-                        <MaterialIcons name='date-range' color={errors.date ? '#cc0000' : '#4A3780'} size={35} />
+                        <MaterialIcons name="date-range" color={errors.date ? '#cc0000' : '#4A3780'} size={35} />
                         <TouchableOpacity onPress={() => showModal()}>
                             <Text style={styles.dateTextStyle}>
                                 {insertGoal.date}
@@ -259,16 +273,14 @@ export default function AddGoal() {
 
                     <Portal>
                         <Modal
-                            animationType='slide'
+                            animationType="slide"
                             transparent={true}
                             visible={show}
                         >
-
                             <View style={styles.centeredView}>
                                 <View style={styles.modalView}>
-
                                     <DatePicker
-                                        mode='calendar'
+                                        mode="calendar"
                                         minimumDate={startDate}
                                         selected={insertGoal.date}
                                         onDateChange={handleDateChange}
@@ -280,7 +292,6 @@ export default function AddGoal() {
                                             textSecondaryColor: '#4A3780',
                                         }}
                                     />
-
                                     <View style={styles.calendarBtns}>
                                         <TouchableOpacity onPress={showModal}>
                                             <Text style={{
@@ -315,16 +326,11 @@ export default function AddGoal() {
                     </View>
                     {errors.description && <Text style={styles.errorStyle}>{errors.description}</Text>}
 
-                    <TouchableOpacity style={styles.btnContainer} onPress={() => {
-                        //TODO: Send request and add a new goal
-                        validate();
-                    }}>
+                    <TouchableOpacity style={styles.btnContainer} onPress={validate}>
                         <Text style={styles.txtSave}>Save</Text>
                     </TouchableOpacity>
-
                 </View>
             </ScrollView>
         </Provider>
-
-    )
+    );
 }

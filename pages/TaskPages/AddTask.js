@@ -5,6 +5,14 @@ import DatePicker from 'react-native-modern-datepicker';
 import { getFormatedDate } from 'react-native-modern-datepicker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
+import { SelectList } from 'react-native-dropdown-select-list'
+
+const data = [
+    { key: '1', value: 'Meeting' },
+    { key: '2', value: 'Prototype' },
+    { key: '3', value: 'Training' },
+    { key: '4', value: 'Document' },
+];
 
 export default function AddTask() {
     const styles = StyleSheet.create({
@@ -240,6 +248,18 @@ export default function AddTask() {
                         />
                     </View>
                     {errors.title && <Text style={styles.errorStyle}>{errors.title}</Text>}
+
+                    <View style={styles.inpContainer}>
+                        <Text style={styles.txt}>Category</Text>
+                        <View>
+                            <SelectList
+                                setSelected={() => { }}
+                                data={data}
+                                save="value"
+                            />
+                        </View>
+                    </View>
+
 
                     <View style={errors.date ? styles.wrapperError : styles.wrapper}>
                         <MaterialIcons name='date-range' color={errors.date ? '#cc0000' : '#4A3780'} size={35} />
