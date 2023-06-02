@@ -6,6 +6,7 @@ import { getFormatedDate } from 'react-native-modern-datepicker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list'
+import { useEffect } from 'react';
 
 
 
@@ -14,13 +15,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    headerText: {
-        color: '#4A3780',
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 7,
-        marginTop: 17
+        marginTop: 15,
     },
     centeredView: {
         flex: 1,
@@ -166,7 +161,28 @@ const data = [
     { key: '4', value: 'Document' },
 ];
 
-export default function AddGoal() {
+export default function AddGoal({ navigation, route }) {
+    useEffect(() => {
+        if (!navigation || !route) return
+
+        const parentNavigator = navigation.getParent('cHector');
+
+        if (parentNavigator) {
+            if (route.name === 'AddGoal') {
+                parentNavigator.setOptions({
+                    headerShown: false,
+                })
+            }
+        }
+
+        return parentNavigator
+            ? () => {
+                parentNavigator.setOptions({
+                    headerShown: true,
+                })
+            }
+            : undefined
+    }, [navigation, route]);
     const today = new Date();
     const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD');
 
@@ -238,9 +254,6 @@ export default function AddGoal() {
         <Provider>
             <ScrollView>
                 <View style={styles.container}>
-                    <View>
-                        <Text style={styles.headerText}>Add a new goal</Text>
-                    </View>
                     <View style={styles.inpContainer}>
                         <Text style={styles.txt}>Goal Title</Text>
                         <TextInput

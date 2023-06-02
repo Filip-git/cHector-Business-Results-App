@@ -37,6 +37,13 @@ export default function Account({ navigation }) {
       marginTop: 55,
       marginBottom: 15,
     },
+    logOutButton:{
+      backgroundColor: '#4A3780',
+      borderRadius: 50,
+      height: 56,
+      marginTop: 15,
+      width: screenWidth / 3,
+    },
     editButtonText: {
       alignItems: 'center',
       justifyContent: 'center',
@@ -58,6 +65,12 @@ export default function Account({ navigation }) {
           <View>
             {/* TODO: Repalce icon with profile image */}
             <MaterialCommunityIcons name='account-box-outline' color={'#4A3780'} size={125} />
+            <TouchableOpacity style={styles.logOutButton} onPress={() => {
+              //TODO: Logout the user
+              navigation.popToTop();
+            }}>
+              <Text style={styles.editButtonText}>Log out</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.accountDetailsWrapper}>
             <View style={styles.accountDetails}>
@@ -86,7 +99,6 @@ export default function Account({ navigation }) {
             width: 358
           }}>
             <TouchableOpacity style={styles.editButton} onPress={() => {
-              //TODO: Navigate to edit account form
               navigation.navigate('EditAccount');
             }}>
               <Text style={styles.editButtonText}>Edit profile</Text>

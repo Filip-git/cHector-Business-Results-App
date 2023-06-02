@@ -6,6 +6,7 @@ import { getFormatedDate } from 'react-native-modern-datepicker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list'
+import { useEffect } from 'react';
 
 const data = [
     { key: '1', value: 'Meeting' },
@@ -14,19 +15,34 @@ const data = [
     { key: '4', value: 'Document' },
 ];
 
-export default function AddTask() {
+export default function AddTask({navigation,route}) {
+    useEffect(() => {
+        if (!navigation || !route) return
+
+        const parentNavigator = navigation.getParent('cHector');
+
+        if (parentNavigator) {
+            if (route.name === 'AddTask') {
+                parentNavigator.setOptions({
+                    headerShown: false,
+                })
+            }
+        }
+
+        return parentNavigator
+            ? () => {
+                parentNavigator.setOptions({
+                    headerShown: true,
+                })
+            }
+            : undefined
+    }, [navigation, route]);
     const styles = StyleSheet.create({
         container: {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        headerText: {
-            color: '#4A3780',
-            fontSize: 22,
-            fontWeight: 'bold',
-            marginBottom: 7,
-            marginTop: 17
+            marginTop: 15,
         },
         centeredView: {
             flex: 1,
@@ -236,9 +252,6 @@ export default function AddTask() {
         <Provider>
             <ScrollView>
                 <View style={styles.container}>
-                    <View>
-                        <Text style={styles.headerText}>Add a new task</Text>
-                    </View>
                     <View style={styles.inpContainer}>
                         <Text style={styles.txt}>Task Title</Text>
                         <TextInput
@@ -329,7 +342,6 @@ export default function AddTask() {
                     {errors.description && <Text style={styles.errorStyle}>{errors.description}</Text>}
 
                     <TouchableOpacity style={styles.btnContainer} onPress={() => {
-                        //TODO: Send request and add a new task
                         validate();
                     }}>
                         <Text style={styles.txtSave}>Save</Text>

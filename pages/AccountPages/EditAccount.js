@@ -1,6 +1,7 @@
 import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useEffect } from 'react';
 
 
 
@@ -10,13 +11,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    headerText: {
-        color: '#4A3780',
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 7,
-        marginTop: 17
+        marginTop: 15,
     },
     accountEditWrapper: {
         width: screenWidth - 55,
@@ -105,8 +100,28 @@ const styles = StyleSheet.create({
 })
 
 
-export default function EditAccount() {
+export default function EditAccount({ navigation, route }) {
+    useEffect(() => {
+        if (!navigation || !route) return
 
+        const parentNavigator = navigation.getParent('cHector');
+
+        if (parentNavigator) {
+            if (route.name === 'EditAccount') {
+                parentNavigator.setOptions({
+                    headerShown: false,
+                })
+            }
+        }
+
+        return parentNavigator
+            ? () => {
+                parentNavigator.setOptions({
+                    headerShown: true,
+                })
+            }
+            : undefined
+    }, [navigation, route]);
     const [userEdit, setUserEdit] = useState({
         name: '',
         email: '',
@@ -130,22 +145,22 @@ export default function EditAccount() {
         if (!userEdit.name) {
             handleError('Please enter your name !', 'name');
             valid = false;
-        } 
+        }
         if (!userEdit.phone) {
             handleError('Please enter your phone number !', 'phone');
             valid = false;
-        } 
-        if(!userEdit.email){
+        }
+        if (!userEdit.email) {
             handleError('Please enter your email !', 'email');
             valid = false;
-        } else if(!userEdit.email.match(/\S+@\S+\.\S+/)){
+        } else if (!userEdit.email.match(/\S+@\S+\.\S+/)) {
             handleError('Please enter a valid email !', 'email');
             valid = false;
         }
         if (!userEdit.password) {
             handleError('Please enter a new password !', 'password');
             valid = false;
-        } else if(userEdit.password !== userEdit.confirmPass){
+        } else if (userEdit.password !== userEdit.confirmPass) {
             handleError('Password and confirmation don\'t match !', 'password');
             valid = false;
         }
@@ -153,21 +168,21 @@ export default function EditAccount() {
         if (!userEdit.confirmPass) {
             handleError('Please confirm your password !', 'confirmPass');
             valid = false;
-        } else if(userEdit.confirmPass !== userEdit.password){
+        } else if (userEdit.confirmPass !== userEdit.password) {
             handleError('Password and confirmation don\'t match !', 'confirmPass');
             valid = false;
         }
-        if(valid){
+        if (valid) {
             //TODO: Send request
-            
 
-            handleError(null,'name');
-            handleError(null,'phone');
-            handleError(null,'email');
-            handleError(null,'password');
-            handleError(null,'confirmPass');
 
-            Alert.alert("Edit successful","You have successfully edited your profile !")
+            handleError(null, 'name');
+            handleError(null, 'phone');
+            handleError(null, 'email');
+            handleError(null, 'password');
+            handleError(null, 'confirmPass');
+
+            Alert.alert("Edit successful", "You have successfully edited your profile !")
         }
 
     }
@@ -179,104 +194,101 @@ export default function EditAccount() {
     }
 
     return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <View>
-                        <Text style={styles.headerText}>Edit Your Profile</Text>
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.accountEditWrapper}>
+                    <View style={errors.name ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                        <MaterialCommunityIcons name='account-outline' color={'#4A3780'} size={35} />
+                        <TextInput
+                            onChangeText={(text) => handleChange(text, 'name')}
+                            value={userEdit.name}
+                            placeholder='e.g. John Doe'
+                            style={styles.accountInputField}
+                            onFocus={() => {
+                                handleError(null, 'name');
+                            }}
+                        />
                     </View>
-                    <View style={styles.accountEditWrapper}>
-                        <View style={errors.name ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                            <MaterialCommunityIcons name='account-outline' color={'#4A3780'} size={35} />
-                            <TextInput
-                                onChangeText={(text) => handleChange(text, 'name')}
-                                value={userEdit.name}
-                                placeholder='e.g. John Doe'
-                                style={styles.accountInputField}
-                                onFocus={()=> {
-                                    handleError(null,'name');
-                                }}
-                            />
-                        </View>
-                        {errors.name && <Text style={styles.errorStyle}>{errors.name}</Text>}
+                    {errors.name && <Text style={styles.errorStyle}>{errors.name}</Text>}
 
-                        <View style={errors.phone ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                            <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
-                            <TextInput
-                                keyboardType='numeric'
-                                onChangeText={(text) => handleChange(text, 'phone')}
-                                value={userEdit.phone}
-                                placeholder='e.g. 000/000-000'
-                                style={styles.accountInputField}
-                                onFocus={()=> {
-                                    handleError(null,'phone');
-                                }}
-                            />
-                        </View>
-                        {errors.phone  && <Text style={styles.errorStyle}>{errors.phone}</Text>}
-
-                        <View style={errors.email ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                            <MaterialCommunityIcons name='email-outline' color={'#4A3780'} size={35} />
-                            <TextInput
-                                onChangeText={(text) => handleChange(text, 'email')}
-                                value={userEdit.email}
-                                placeholder='e.g. john.doe@gmail.com'
-                                style={styles.accountInputField}
-                                onFocus={()=> {
-                                    handleError(null,'email');
-                                }}
-                            />
-                        </View>
-                        {errors.email  && <Text style={styles.errorStyle}>{errors.email}</Text>}
-
-                        <View style={errors.password ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                            <MaterialCommunityIcons name='lock-outline' color={'#4A3780'} size={35} />
-                            <TextInput
-                                onChangeText={(text) => handleChange(text, 'password')}
-                                value={userEdit.password}
-                                placeholder='Enter password'
-                                style={styles.accountInputPassField}
-                                secureTextEntry={hidePass}
-                                onFocus={()=> {
-                                    handleError(null,'password');
-                                }}
-                            />
-                            <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
-                                <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
-                            </TouchableOpacity>
-                        </View>
-                        {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
-
-                        <View style={errors.confirmPass ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                            <MaterialCommunityIcons name='lock-check-outline' color={'#4A3780'} size={35} />
-                            <TextInput
-                                onChangeText={(text) => handleChange(text, 'confirmPass')}
-                                value={userEdit.confirmPass}
-                                placeholder='Confirm password'
-                                style={styles.accountInputPassField}
-                                secureTextEntry={hidePassConf}
-                                onFocus={()=> {
-                                    handleError(null,'confirmPass');
-                                }}
-                            />
-                            <TouchableOpacity onPress={() => setHidePassConf(!hidePassConf)}>
-                                <MaterialCommunityIcons name={hidePassConf ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
-                            </TouchableOpacity>
-                        </View>
-                        {errors.confirmPass !== null && <Text style={styles.errorStyle}>{errors.confirmPass}</Text>}
-
+                    <View style={errors.phone ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                        <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
+                        <TextInput
+                            keyboardType='numeric'
+                            onChangeText={(text) => handleChange(text, 'phone')}
+                            value={userEdit.phone}
+                            placeholder='e.g. 000/000-000'
+                            style={styles.accountInputField}
+                            onFocus={() => {
+                                handleError(null, 'phone');
+                            }}
+                        />
                     </View>
-                    <View style={{
-                        width: 358
-                    }}>
-                        <TouchableOpacity style={styles.submitButton} onPress={() => {
-                            //TODO: Send request and update user data
-                            validate();
-                        }}>
-                            <Text style={styles.submitButtonText}>Save changes</Text>
+                    {errors.phone && <Text style={styles.errorStyle}>{errors.phone}</Text>}
+
+                    <View style={errors.email ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                        <MaterialCommunityIcons name='email-outline' color={'#4A3780'} size={35} />
+                        <TextInput
+                            onChangeText={(text) => handleChange(text, 'email')}
+                            value={userEdit.email}
+                            placeholder='e.g. john.doe@gmail.com'
+                            style={styles.accountInputField}
+                            onFocus={() => {
+                                handleError(null, 'email');
+                            }}
+                        />
+                    </View>
+                    {errors.email && <Text style={styles.errorStyle}>{errors.email}</Text>}
+
+                    <View style={errors.password ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                        <MaterialCommunityIcons name='lock-outline' color={'#4A3780'} size={35} />
+                        <TextInput
+                            onChangeText={(text) => handleChange(text, 'password')}
+                            value={userEdit.password}
+                            placeholder='Enter password'
+                            style={styles.accountInputPassField}
+                            secureTextEntry={hidePass}
+                            onFocus={() => {
+                                handleError(null, 'password');
+                            }}
+                        />
+                        <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
+                            <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
                         </TouchableOpacity>
                     </View>
+                    {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
+
+                    <View style={errors.confirmPass ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                        <MaterialCommunityIcons name='lock-check-outline' color={'#4A3780'} size={35} />
+                        <TextInput
+                            onChangeText={(text) => handleChange(text, 'confirmPass')}
+                            value={userEdit.confirmPass}
+                            placeholder='Confirm password'
+                            style={styles.accountInputPassField}
+                            secureTextEntry={hidePassConf}
+                            onFocus={() => {
+                                handleError(null, 'confirmPass');
+                            }}
+                        />
+                        <TouchableOpacity onPress={() => setHidePassConf(!hidePassConf)}>
+                            <MaterialCommunityIcons name={hidePassConf ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
+                        </TouchableOpacity>
+                    </View>
+                    {errors.confirmPass !== null && <Text style={styles.errorStyle}>{errors.confirmPass}</Text>}
+
                 </View>
-            </ScrollView>
+                <View style={{
+                    width: 358
+                }}>
+                    <TouchableOpacity style={styles.submitButton} onPress={() => {
+                        //TODO: Send request and update user data
+                        validate();
+                    }}>
+                        <Text style={styles.submitButtonText}>Save changes</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </ScrollView>
 
     )
 }
