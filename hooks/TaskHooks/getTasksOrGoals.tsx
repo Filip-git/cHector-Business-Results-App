@@ -9,7 +9,18 @@ const getTasksOrGoals = (endpoint: string) => {
     const fetchTasks = async () => {
         const response = await axios.get(
             url
-        );
+        ).catch(function (error) {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
+        });
 
         if (response && response.data) {
             setTasks(response.data);

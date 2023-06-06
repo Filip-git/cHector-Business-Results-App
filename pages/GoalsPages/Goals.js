@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from
 import React from 'react';
 import Goal from '../../models/Goal';
 import getTasksOrGoals from '../../hooks/TaskHooks/getTasksOrGoals';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function Goals({ navigation }) {
   const screenWidth = Dimensions.get('window').width;
@@ -45,36 +46,56 @@ export default function Goals({ navigation }) {
       marginTop: 10,
       marginBottom: 5,
       backgroundColor: '#ffffff'
+    },
+    emptyWrapper: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 10,
+      marginBottom: 5,
+    },
+    emptyText: {
+      fontWeight: 'bold',
+      fontSize: 35,
+      color: '#ffffff'
     }
   });
 
   const { goals } = getTasksOrGoals('goals');
- 
   const completed = [];
   const notCompleted = [];
-  goals.forEach(element => {
-    if (element.completed) {
-      completed.push(element);
-    }
-    else {
-      notCompleted.push(element);
-    }
-  });
+  if (goals !== undefined) {
+    goals.forEach(element => {
+      if (element.completed) {
+        completed.push(element);
+      }
+      else {
+        notCompleted.push(element);
+      }
+    });
+  }
   return (
     <ScrollView>
       <View style={styles.background} />
 
       <View style={styles.container}>
 
-        <View style={styles.goalsWrapper}>
+        <View style={notCompleted.length > 0 ? styles.goalsWrapper : styles.emptyWrapper}>
           {notCompleted !== undefined && notCompleted.map((element, index) => {
             return <Goal key={index} goal={element} last={(index === notCompleted.length - 1) ? true : false} />
           })}
+          {notCompleted.length === 0 &&
+            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 5 }}>
+              <Text style={styles.emptyText}>No goals found</Text>
+              <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
+            </View>
+          }
         </View>
 
-        <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'left', width: screenWidth - 25 }}>Completed</Text>
+        {completed.length > 0 && <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'left', width: screenWidth - 25 }}>Completed</Text>}
 
-        <View style={styles.goalsWrapper}>
+        <View style={completed.length > 0 ? styles.goalsWrapper : styles.emptyWrapper}>
           {completed !== undefined && completed.map((element, index) => {
             return <Goal key={index} goal={element} last={(index === completed.length - 1) ? true : false} />
           })}

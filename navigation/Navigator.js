@@ -7,7 +7,6 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Login from '../pages/Login';
-import Home from '../pages/Home';
 import KPIScreen from '../pages/KPIScreen';
 import Goals from '../pages/GoalsPages/Goals';
 import Account from '../pages/AccountPages/Account';
@@ -79,9 +78,6 @@ export default function Navigator() {
         tabBarInactiveTintColor: '#ffffff',
       }} >
 
-        <BottomTab.Screen name='Home' component={Home} options={{
-          tabBarIcon: ({ color, size }) => (<Ionicons name='home-outline' color={color} size={size} />),
-        }} />
         <BottomTab.Screen name='KPIScreen' component={KPIScreen} options={{
           tabBarIcon: ({ color, size }) => (<Octicons name='graph' color={color} size={size} />),
         }} />
@@ -168,7 +164,7 @@ export default function Navigator() {
               headerLeft: () => {
                 return (
                   <TouchableOpacity style={styles.backButton} onPress={() => {
-                    navigation.navigate('Home');
+                    navigation.navigate('KPIScreen');
                   }}>
                     <Ionicons name='chevron-back' color={'#4A3780'} size={25} />
                   </TouchableOpacity>
