@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import React from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import Goal from '../../models/Goal';
 import getTasksOrGoals from '../../hooks/TaskHooks/getTasksOrGoals';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -63,54 +63,57 @@ export default function Goals({ navigation }) {
   });
 
   const { goals } = getTasksOrGoals('goals');
-  const completed = [];
-  const notCompleted = [];
+  const completedGoals = [];
+  const notCompletedGoals = [];
+
   if (goals !== undefined) {
     goals.forEach(element => {
       if (element.completed) {
-        completed.push(element);
-      }
-      else {
-        notCompleted.push(element);
+        completedGoals.push(element);
+      } else {
+        notCompletedGoals.push(element);
       }
     });
   }
+
+  const hasNotCompletedGoals = notCompletedGoals.length > 0;
+  const hasCompletedGoals = completedGoals.length > 0;
+
   return (
     <ScrollView>
       <View style={styles.background} />
 
       <View style={styles.container}>
-
-        <View style={notCompleted.length > 0 ? styles.goalsWrapper : styles.emptyWrapper}>
-          {notCompleted !== undefined && notCompleted.map((element, index) => {
-            return <Goal key={index} goal={element} last={(index === notCompleted.length - 1) ? true : false} />
-          })}
-          {notCompleted.length === 0 &&
-            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 5 }}>
+        <View style={hasNotCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
+          {notCompletedGoals !== undefined && notCompletedGoals.map((element, index) => (
+            <Goal key={element.id} goal={element} last={index === notCompletedGoals.length - 1} />
+          ))}
+          {!hasNotCompletedGoals && (
+            <View style={{ ...styles.emptyWrapper, padding: 5 }}>
               <Text style={styles.emptyText}>No goals found</Text>
               <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
             </View>
-          }
+          )}
         </View>
 
-        {completed.length > 0 && <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'left', width: screenWidth - 25 }}>Completed</Text>}
+        {hasCompletedGoals && (
+          <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'left', width: screenWidth - 25 }}>
+            Completed
+          </Text>
+        )}
 
-        <View style={completed.length > 0 ? styles.goalsWrapper : styles.emptyWrapper}>
-          {completed !== undefined && completed.map((element, index) => {
-            return <Goal key={index} goal={element} last={(index === completed.length - 1) ? true : false} />
-          })}
+        <View style={hasCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
+          {completedGoals !== undefined && completedGoals.map((element, index) => (
+            <Goal key={element.id} goal={element} last={index === completedGoals.length - 1} />
+          ))}
         </View>
 
-        <View style={{
-          width: 358
-        }}>
-          <TouchableOpacity style={styles.addButton} onPress={() => {
-            navigation.navigate('AddGoal');
-          }}>
+        <View style={{ width: screenWidth - 25 }}>
+          <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddGoal')}>
             <Text style={styles.addButtonText}>Add goals</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }
