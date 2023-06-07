@@ -25,19 +25,25 @@ const data = [
 
 function AddTask({ navigation, route }) {
     useEffect(() => {
+        if (!navigation || !route) return
+
         const parentNavigator = navigation.getParent('cHector');
 
         if (parentNavigator) {
             if (route.name === 'AddTask') {
                 parentNavigator.setOptions({
                     headerShown: false,
-                });
-            } else {
-                parentNavigator.setOptions({
-                    headerShown: true,
-                });
+                })
             }
         }
+
+        return parentNavigator
+            ? () => {
+                parentNavigator.setOptions({
+                    headerShown: true,
+                })
+            }
+            : undefined
     }, [navigation, route]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);

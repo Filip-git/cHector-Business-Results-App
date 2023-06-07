@@ -156,27 +156,31 @@ const Tabs = () => (
 export default function Navigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name='Login'
-          component={Login}
-          options={{ headerTitle: ' ' }}
-        />
-        <Stack.Screen
-          name='cHector'
-          component={Tabs}
-          options={({ route, navigation }) => ({
-            headerTitle: getHeaderTitle(route),
-            headerLeft: () => (
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => navigation.navigate('KPIScreen')}
-              >
-                <Ionicons name='chevron-back' color={'#4A3780'} size={25} />
-              </TouchableOpacity>
-            ),
-          })}
-        />
+      <Stack.Navigator id='cHector'>
+        <Stack.Group screenOptions={{
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: '#4A3780',
+          },
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontWeight: 'normal', fontSize: 25 },
+          headerTintColor: '#ffffff'
+        }}>
+          <Stack.Screen
+            name='Login'
+            component={Login}
+            options={{ headerTitle: ' ' }}
+          />
+          <Stack.Screen
+            name='cHector'
+            component={Tabs}
+            options={({ route }) => ({
+              headerTitle: getHeaderTitle(route),
+              headerBackVisible: false,
+            })}
+          />
+        </Stack.Group>
+
       </Stack.Navigator>
     </NavigationContainer>
   );

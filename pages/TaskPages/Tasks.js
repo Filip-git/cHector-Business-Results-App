@@ -84,7 +84,7 @@ export default function Tasks({ navigation }) {
                         return <Task key={index} task={element} last={(index === notCompleted.length - 1) ? true : false} />
                     })}
                     {notCompleted.length === 0 &&
-                        <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 5 }}>
+                        <View style={{ ...styles.emptyWrapper, padding: 5 }}>
                             <Text style={styles.emptyText}>No tasks found</Text>
                             <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
                         </View>
