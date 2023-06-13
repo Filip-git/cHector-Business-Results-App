@@ -7,6 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useEffect } from 'react';
+import postTasksOrGoals from '../../hooks/postTasksOrGoals';
 
 
 
@@ -185,17 +186,19 @@ export default function AddGoal({ navigation, route }) {
     }, [navigation, route]);
     const today = new Date();
     const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD');
-
+    const [dateText, setDateText] = useState("Click here to pick a date");
     const [show, setShow] = useState(false);
     const [insertGoal, setInsertGoal] = useState({
         title: '',
-        date: 'Click here to pick a date',
-        description: ''
+        goalType: '',
+        date: '',
+        notes: '',
+        completed: false
     });
     const [errors, setErrors] = useState({
         title: '',
         date: '',
-        description: ''
+        notes: ''
     });
 
     const showModal = () => {
@@ -204,19 +207,26 @@ export default function AddGoal({ navigation, route }) {
     };
 
     const showModalCancel = () => {
-        setInsertGoal((prevState) => ({ ...prevState, date: 'Click here to pick a date' }));
+        setInsertGoal((prevState) => ({ ...prevState, date: '' }));
+        setDateText('Click here to pick a date');
         setShow(!show);
     };
 
     const handleDateChange = (selectedDate) => {
-        const formated = selectedDate.replaceAll('/', '-');
-        const currentDate = new Date(formated);
-        const formatedDate = getFormatedDate(currentDate, 'DD/MM/YYYY');
-        setInsertGoal((prevState) => ({ ...prevState, date: formatedDate }));
+        setDateText(getFormatedDate(selectedDate.replaceAll('/', '-'), 'DD/MM/YYYY'));
+        const selectedDateFormated = selectedDate.replaceAll('/', '-');
+        setInsertGoal((prevState) => ({ ...prevState, date: selectedDateFormated }));
     };
 
     const handleChange = (text, field) => {
-        setInsertGoal((prevState) => ({ ...prevState, [field]: text }));
+        if (field === 'goalType') {
+            const upperCaseText = text.toUpperCase();
+            setInsertGoal((prevState) => ({ ...prevState, [field]: upperCaseText }))
+            console.log("Goaltype: " + insertGoal.goalType);
+        }
+        else {
+            setInsertGoal((prevState) => ({ ...prevState, [field]: text }));
+        }
     };
 
     const handleError = (text, field) => {
@@ -231,22 +241,28 @@ export default function AddGoal({ navigation, route }) {
             handleError('Please enter a goal title!', 'title');
             valid = false;
         }
-        if (!insertGoal.description) {
-            handleError('Please enter a description for the goal!', 'description');
+        if (!insertGoal.notes) {
+            handleError('Please enter some notes for the goal!', 'notes');
             valid = false;
         }
-        if (insertGoal.date === 'Click here to pick a date') {
+        if (insertGoal.date === '') {
             handleError('Please pick a deadline for the goal!', 'date');
             valid = false;
         }
 
         if (valid) {
-            // TODO: Send request
             handleError(null, 'title');
-            handleError(null, 'description');
+            handleError(null, 'notes');
             handleError(null, 'date');
+            // TODO: Send request
 
-            Alert.alert('New goal added', 'You have successfully added a new goal!');
+            const inserted = postTasksOrGoals('goals', insertGoal);
+            if (inserted !== null || inserted !== undefined) {
+                Alert.alert('New goal added', 'You have successfully added a new goal!');
+            }
+            else {
+                Alert.alert('Something went wrong', 'Please try again later!')
+            }
         }
     };
 
@@ -268,7 +284,7 @@ export default function AddGoal({ navigation, route }) {
                         <Text style={styles.txt}>Category</Text>
                         <View>
                             <SelectList
-                                setSelected={() => { }}
+                                setSelected={(selected) => handleChange(selected, 'goalType')}
                                 data={data}
                                 save="value"
                             />
@@ -279,7 +295,7 @@ export default function AddGoal({ navigation, route }) {
                         <MaterialIcons name="date-range" color={errors.date ? '#cc0000' : '#4A3780'} size={35} />
                         <TouchableOpacity onPress={() => showModal()}>
                             <Text style={styles.dateTextStyle}>
-                                {insertGoal.date}
+                                {dateText}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -332,12 +348,12 @@ export default function AddGoal({ navigation, route }) {
                         <TextInput
                             multiline
                             numberOfLines={8}
-                            style={errors.description ? styles.notesInputError : styles.notesInput}
-                            onChangeText={(text) => handleChange(text, 'description')}
-                            onFocus={() => handleError(null, 'description')}
+                            style={errors.notes ? styles.notesInputError : styles.notesInput}
+                            onChangeText={(text) => handleChange(text, 'notes')}
+                            onFocus={() => handleError(null, 'notes')}
                         />
                     </View>
-                    {errors.description && <Text style={styles.errorStyle}>{errors.description}</Text>}
+                    {errors.notes && <Text style={styles.errorStyle}>{errors.notes}</Text>}
 
                     <TouchableOpacity style={styles.btnContainer} onPress={validate}>
                         <Text style={styles.txtSave}>Save</Text>

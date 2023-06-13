@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert, Keyboard } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { UserContext } from '../context/userContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     color: '#cc0000',
     fontSize: 12,
     fontWeight: 'bold',
-}
+  }
 });
 
 
@@ -106,7 +107,7 @@ export default function Login({ navigation }) {
     username: '',
     password: ''
   })
-
+  const { setUsername, setPassword } = useContext(UserContext);
   const handleChange = (text, field) => {
     setUser((prevState) => ({ ...prevState, [field]: text }));
   }
@@ -114,26 +115,27 @@ export default function Login({ navigation }) {
     setErrors((prevState) => ({ ...prevState, [field]: text }));
   }
   const validate = () => {
-	  Keyboard.dismiss();
+    Keyboard.dismiss();
     var valid = true;
 
-    if(!user.username){
-      handleError('Please enter your username !','username');
+    if (!user.username) {
+      handleError('Please enter your username !', 'username');
       valid = false;
     }
-    if(!user.password){
-      handleError('Please enter your password !','password');
+    if (!user.password) {
+      handleError('Please enter your password !', 'password');
       valid = false;
     }
 
-    if(valid){
+    if (valid) {
       //TODO: Implement login on success and failure
-      
+      setUsername(user.username);
+      setPassword(user.password);
+
       navigation.navigate('cHector');
 
     }
   }
-
   return (
     <SafeAreaView>
       <ScrollView
@@ -145,8 +147,8 @@ export default function Login({ navigation }) {
             <Text style={{ fontSize: 15, marginBottom: 15 }}>Username: </Text>
             <View style={errors.username ? styles.userInputError : styles.userInput}>
               <TextInput
-                onFocus={() => handleError(null,'username')}
-                onChangeText={(text) => handleChange(text,'username')}
+                onFocus={() => handleError(null, 'username')}
+                onChangeText={(text) => handleChange(text, 'username')}
                 value={user.username}
                 placeholder='Enter your username'
                 style={{
@@ -161,8 +163,8 @@ export default function Login({ navigation }) {
             <View style={errors.password ? styles.passInputError : styles.passInput}>
               <TextInput
                 autoComplete='off' autoCorrect={false} secureTextEntry={hidePass}
-                onFocus={() => handleError(null,'password')}
-                onChangeText={(text) => handleChange(text,'password')}
+                onFocus={() => handleError(null, 'password')}
+                onChangeText={(text) => handleChange(text, 'password')}
                 value={user.password}
                 placeholder='Enter your password'
                 style={{

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios';
 
 const getTasksOrGoals = (endpoint: string) => {
-    const [tasks, setTasks] = useState<any[]>([]);
+    const [tasksGoals, setTasksGoals] = useState<any[]>([]);
     const url = 'http://10.0.2.2:8080/' + endpoint;
 
     const fetchTasks = async () => {
@@ -23,16 +23,14 @@ const getTasksOrGoals = (endpoint: string) => {
         });
 
         if (response && response.data) {
-            setTasks(response.data);
+            setTasksGoals(response.data);
         }
     }
-
     useEffect(() => {
         fetchTasks();
     }, []);
 
-
-    return { tasks }
+    return { tasksGoals }
 }
 
 export default getTasksOrGoals

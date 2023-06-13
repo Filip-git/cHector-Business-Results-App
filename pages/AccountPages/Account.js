@@ -1,7 +1,8 @@
 import { StyleSheet, SafeAreaView, Text, View, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { UserContext } from '../../context/userContext'
 
 export default function Account({ navigation }) {
   const screenWidth = Dimensions.get('window').width;
@@ -37,7 +38,7 @@ export default function Account({ navigation }) {
       marginTop: 55,
       marginBottom: 15,
     },
-    logOutButton:{
+    logOutButton: {
       backgroundColor: '#4A3780',
       borderRadius: 50,
       height: 56,
@@ -58,6 +59,8 @@ export default function Account({ navigation }) {
 
   });
 
+  const { logOut } = useContext(UserContext);
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -67,6 +70,7 @@ export default function Account({ navigation }) {
             <MaterialCommunityIcons name='account-box-outline' color={'#4A3780'} size={125} />
             <TouchableOpacity style={styles.logOutButton} onPress={() => {
               //TODO: Logout the user
+              logOut();
               navigation.popToTop();
             }}>
               <Text style={styles.editButtonText}>Log out</Text>

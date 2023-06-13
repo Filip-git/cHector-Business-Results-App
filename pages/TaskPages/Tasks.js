@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native'
 import React from 'react'
 import Task from '../../models/Task';
-import getTasksOrGoals from '../../hooks/TaskHooks/getTasksOrGoals';
+import getTasksOrGoals from '../../hooks/getTasksOrGoals';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 
@@ -62,11 +62,11 @@ export default function Tasks({ navigation }) {
             color: '#ffffff'
         }
     })
-    const { tasks } = getTasksOrGoals('tasks');
+    const { tasksGoals } = getTasksOrGoals('tasks');
     const completed = [];
     const notCompleted = [];
-    if (tasks !== undefined) {
-        tasks.forEach(element => {
+    if (tasksGoals !== undefined) {
+        tasksGoals.forEach(element => {
             if (element.completed) {
                 completed.push(element);
             }

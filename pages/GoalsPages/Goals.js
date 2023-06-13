@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import Goal from '../../models/Goal';
-import getTasksOrGoals from '../../hooks/TaskHooks/getTasksOrGoals';
+import getTasksOrGoals from '../../hooks/getTasksOrGoals';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function Goals({ navigation }) {
@@ -62,12 +62,13 @@ export default function Goals({ navigation }) {
     }
   });
 
-  const { goals } = getTasksOrGoals('goals');
+  const {tasksGoals} = getTasksOrGoals('goals');
+
   const completedGoals = [];
   const notCompletedGoals = [];
 
-  if (goals !== undefined) {
-    goals.forEach(element => {
+  if (tasksGoals !== undefined) {
+    tasksGoals.forEach(element => {
       if (element.completed) {
         completedGoals.push(element);
       } else {
@@ -75,7 +76,6 @@ export default function Goals({ navigation }) {
       }
     });
   }
-
   const hasNotCompletedGoals = notCompletedGoals.length > 0;
   const hasCompletedGoals = completedGoals.length > 0;
 
@@ -86,9 +86,9 @@ export default function Goals({ navigation }) {
       <View style={styles.container}>
         <View style={hasNotCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
           {notCompletedGoals !== undefined && notCompletedGoals.map((element, index) => (
-            <Goal key={element.id} goal={element} last={index === notCompletedGoals.length - 1} />
+            <Goal key={index} goal={element} last={index === notCompletedGoals.length - 1} />
           ))}
-          {!hasNotCompletedGoals && (
+          {notCompletedGoals.length === 0 && (
             <View style={{ ...styles.emptyWrapper, padding: 5 }}>
               <Text style={styles.emptyText}>No goals found</Text>
               <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
@@ -104,7 +104,7 @@ export default function Goals({ navigation }) {
 
         <View style={hasCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
           {completedGoals !== undefined && completedGoals.map((element, index) => (
-            <Goal key={element.id} goal={element} last={index === completedGoals.length - 1} />
+            <Goal key={index} goal={element} last={index === completedGoals.length - 1} />
           ))}
         </View>
 

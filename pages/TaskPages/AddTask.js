@@ -15,6 +15,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { getFormatedDate } from 'react-native-modern-datepicker';
+import postTasksOrGoals from '../../hooks/postTasksOrGoals';
 
 const data = [
     { key: '1', value: 'Meeting' },
@@ -46,19 +47,24 @@ function AddTask({ navigation, route }) {
             : undefined
     }, [navigation, route]);
 
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [insertTask, setInsertTask] = useState({
         title: '',
-        date: 'Click here to pick a date',
-        description: '',
+        taskType: '',
+        date: '',
+        notes: '',
+        completed: false
     });
     const [errors, setErrors] = useState({
         title: '',
         date: '',
-        description: '',
+        notes: '',
     });
-
-    const startDate = getFormatedDate(new Date().getDate() + 1, 'YYYY/MM/DD');
+    
+    const today = new Date();
+    const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD');
+    const [dateText, setDateText] = useState("Click here to pick a date");
 
     const showModal = () => {
         setIsModalVisible(!isModalVisible);
@@ -71,8 +77,9 @@ function AddTask({ navigation, route }) {
     };
 
     const handleDateChange = (selectedDate) => {
-        const formatedDate = getFormatedDate(selectedDate.replaceAll('/', '-'), 'DD/MM/YYYY');
-        setInsertTask((prevState) => ({ ...prevState, date: formatedDate }));
+        setDateText(getFormatedDate(selectedDate.replaceAll('/', '-'), 'DD/MM/YYYY'));
+        const selectedDateFormated = selectedDate.replaceAll('/', '-');
+        setInsertTask((prevState) => ({ ...prevState, date: selectedDateFormated }));
     };
 
     const handleChange = (text, field) => {
@@ -87,40 +94,39 @@ function AddTask({ navigation, route }) {
         Keyboard.dismiss();
 
         let valid = true;
-        const newErrors = {
-            title: '',
-            date: '',
-            description: '',
-        };
+
 
         if (!insertTask.title) {
-            newErrors.title = 'Please enter a task title!';
+            handleError('Please enter a task title!', 'title');
             valid = false;
         }
 
-        if (!insertTask.description) {
-            newErrors.description = 'Please enter a description for the task!';
+        if (!insertTask.notes) {
+            handleError('Please enter some notes for the task!', 'notes');
             valid = false;
         }
 
         if (insertTask.date === 'Click here to pick a date') {
-            newErrors.date = 'Please pick a deadline for the task!';
+            handleError('Please pick a deadline for the task!', 'date');
             valid = false;
         }
 
         if (valid) {
+            handleError(null, 'title');
+            handleError(null, 'notes');
+            handleError(null, 'date');
             // TODO: Send request
 
-            setInsertTask({
-                title: '',
-                date: 'Click here to pick a date',
-                description: '',
-            });
-
-            Alert.alert('New task added', 'You have successfully added a new task!');
+            console.log(insertTask);
+            const inserted = postTasksOrGoals('tasks', insertTask);
+            console.log(inserted);
+            if (inserted !== null || inserted !== undefined) {
+                Alert.alert('New task added', 'You have successfully added a new task!');
+            }
+            else {
+                Alert.alert('Something went wrong', 'Please try again later!')
+            }
         }
-
-        setErrors(newErrors);
     };
 
 
@@ -155,7 +161,7 @@ function AddTask({ navigation, route }) {
         },
         inpContainer: {
             width: 350,
-            marginBottom: 7,
+            marginBottom: 15,
         },
         titleInp: {
             borderWidth: 1,
@@ -202,6 +208,7 @@ function AddTask({ navigation, route }) {
         txt: {
             fontSize: 15,
             fontWeight: 'bold',
+            padding: 2,
         },
         btnContainer: {
             backgroundColor: '#4A3780',
@@ -266,8 +273,6 @@ function AddTask({ navigation, route }) {
         }
     })
 
-
-
     return (
         <Provider>
             <ScrollView>
@@ -280,14 +285,16 @@ function AddTask({ navigation, route }) {
                             onChangeText={(text) => handleChange(text, 'title')}
                             onFocus={() => handleError(null, 'title')}
                         />
-                        {errors.title && <Text style={styles.errorStyle}>{errors.title}</Text>}
                     </View>
+                    {errors.title && <Text style={styles.errorStyle}>{errors.title}</Text>}
 
                     {/* Category selection */}
                     <View style={styles.inpContainer}>
                         <Text style={styles.txt}>Category</Text>
                         <View>
-                            <SelectList setSelected={() => { }} data={data} save="value" />
+                            <SelectList setSelected={(selected) => handleChange(selected, 'taskType')}
+                                data={data}
+                                save="value" />
                         </View>
                     </View>
 
@@ -295,7 +302,7 @@ function AddTask({ navigation, route }) {
                     <View style={errors.date ? styles.wrapperError : styles.wrapper}>
                         <MaterialIcons name="date-range" color={errors.date ? '#cc0000' : '#4A3780'} size={35} />
                         <TouchableOpacity onPress={showModal}>
-                            <Text style={styles.dateTextStyle}>{insertTask.date}</Text>
+                            <Text style={styles.dateTextStyle}>{dateText}</Text>
                         </TouchableOpacity>
                     </View>
                     {errors.date && <Text style={styles.errorStyle}>{errors.date}</Text>}
@@ -338,12 +345,12 @@ function AddTask({ navigation, route }) {
                         <TextInput
                             multiline
                             numberOfLines={8}
-                            style={errors.description ? styles.notesInputError : styles.notesInput}
-                            onChangeText={(text) => handleChange(text, 'description')}
-                            onFocus={() => handleError(null, 'description')}
+                            style={errors.notes ? styles.notesInputError : styles.notesInput}
+                            onChangeText={(text) => handleChange(text, 'notes')}
+                            onFocus={() => handleError(null, 'notes')}
                         />
-                        {errors.description && <Text style={styles.errorStyle}>{errors.description}</Text>}
                     </View>
+                    {errors.notes && <Text style={styles.errorStyle}>{errors.notes}</Text>}
 
                     {/* Save button */}
                     <TouchableOpacity style={styles.btnContainer} onPress={validate}>
