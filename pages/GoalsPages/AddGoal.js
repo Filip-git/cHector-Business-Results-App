@@ -7,7 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useEffect } from 'react';
-import postTasksOrGoals from '../../hooks/postTasksOrGoals';
+import { basePostRequest } from '../../hooks/requestHelper';
 
 
 
@@ -222,7 +222,6 @@ export default function AddGoal({ navigation, route }) {
         if (field === 'goalType') {
             const upperCaseText = text.toUpperCase();
             setInsertGoal((prevState) => ({ ...prevState, [field]: upperCaseText }))
-            console.log("Goaltype: " + insertGoal.goalType);
         }
         else {
             setInsertGoal((prevState) => ({ ...prevState, [field]: text }));
@@ -233,7 +232,7 @@ export default function AddGoal({ navigation, route }) {
         setErrors((prevState) => ({ ...prevState, [field]: text }));
     };
 
-    const validate = () => {
+    const validate = async () => {
         Keyboard.dismiss();
         let valid = true;
 
@@ -254,14 +253,21 @@ export default function AddGoal({ navigation, route }) {
             handleError(null, 'title');
             handleError(null, 'notes');
             handleError(null, 'date');
-            // TODO: Send request
 
-            const inserted = postTasksOrGoals('goals', insertGoal);
-            if (inserted !== null || inserted !== undefined) {
-                Alert.alert('New goal added', 'You have successfully added a new goal!');
+            const inserted = await basePostRequest('goals', insertGoal);
+
+            if (inserted.receivedData !== null) {
+                Alert.alert('New goal added', 'You have successfully added a new goal!',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('GoalsStack'),
+                            style: 'default'
+                        }
+                    ]);
             }
             else {
-                Alert.alert('Something went wrong', 'Please try again later!')
+                Alert.alert('Something went wrong', 'Please try again later!');
             }
         }
     };

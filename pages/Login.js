@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Dimensions, TouchableOpacity, Alert, Keyboard } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { UserContext } from '../context/userContext';
+import { basePostRequest } from '../hooks/requestHelper';
 
 const styles = StyleSheet.create({
   container: {
@@ -114,7 +115,7 @@ export default function Login({ navigation }) {
   const handleError = (text, field) => {
     setErrors((prevState) => ({ ...prevState, [field]: text }));
   }
-  const validate = () => {
+  const validate = async () => {
     Keyboard.dismiss();
     var valid = true;
 
@@ -128,11 +129,15 @@ export default function Login({ navigation }) {
     }
 
     if (valid) {
-      //TODO: Implement login on success and failure
       setUsername(user.username);
       setPassword(user.password);
-
-      navigation.navigate('cHector');
+      var logged = await basePostRequest('user', user);
+      if (logged.receivedData !== null) {
+        navigation.navigate('cHector');
+      }
+      else {
+        Alert.alert('Something went wrong', 'Please try again later !');
+      }
 
     }
   }

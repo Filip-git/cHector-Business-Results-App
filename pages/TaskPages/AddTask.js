@@ -15,7 +15,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Portal, Provider } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { getFormatedDate } from 'react-native-modern-datepicker';
-import postTasksOrGoals from '../../hooks/postTasksOrGoals';
+import { basePostRequest } from '../../hooks/requestHelper';
 
 const data = [
     { key: '1', value: 'Meeting' },
@@ -61,7 +61,7 @@ function AddTask({ navigation, route }) {
         date: '',
         notes: '',
     });
-    
+
     const today = new Date();
     const startDate = getFormatedDate(today.setDate(today.getDate() + 1), 'YYYY/MM/DD');
     const [dateText, setDateText] = useState("Click here to pick a date");
@@ -72,7 +72,8 @@ function AddTask({ navigation, route }) {
     };
 
     const showModalCancel = () => {
-        setInsertTask((prevState) => ({ ...prevState, date: 'Click here to pick a date' }));
+        setInsertTask((prevState) => ({ ...prevState, date: '' }));
+        setDateText('Click here to pick a date');
         setIsModalVisible(!isModalVisible);
     };
 
@@ -83,14 +84,20 @@ function AddTask({ navigation, route }) {
     };
 
     const handleChange = (text, field) => {
-        setInsertTask((prevState) => ({ ...prevState, [field]: text }));
+        if (field === 'taskType') {
+            const upperCaseText = text.toUpperCase();
+            setInsertTask((prevState) => ({ ...prevState, [field]: upperCaseText }))
+        }
+        else {
+            setInsertTask((prevState) => ({ ...prevState, [field]: text }));
+        }
     };
 
     const handleError = (errorMessage, field) => {
         setErrors((prevState) => ({ ...prevState, [field]: errorMessage }));
     };
 
-    const validate = () => {
+    const validate = async () => {
         Keyboard.dismiss();
 
         let valid = true;
@@ -106,7 +113,7 @@ function AddTask({ navigation, route }) {
             valid = false;
         }
 
-        if (insertTask.date === 'Click here to pick a date') {
+        if (insertTask.date === '') {
             handleError('Please pick a deadline for the task!', 'date');
             valid = false;
         }
@@ -115,13 +122,18 @@ function AddTask({ navigation, route }) {
             handleError(null, 'title');
             handleError(null, 'notes');
             handleError(null, 'date');
-            // TODO: Send request
 
-            console.log(insertTask);
-            const inserted = postTasksOrGoals('tasks', insertTask);
-            console.log(inserted);
-            if (inserted !== null || inserted !== undefined) {
-                Alert.alert('New task added', 'You have successfully added a new task!');
+            const inserted = await basePostRequest('tasks', insertTask);
+
+            if (inserted.receivedData !== null) {
+                Alert.alert('New task added', 'You have successfully added a new task!',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('TasksStack'),
+                            style: 'default'
+                        }
+                    ]);
             }
             else {
                 Alert.alert('Something went wrong', 'Please try again later!')

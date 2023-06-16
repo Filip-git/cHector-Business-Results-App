@@ -1,9 +1,10 @@
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import Task from '../../models/Task';
-import getTasksOrGoals from '../../hooks/getTasksOrGoals';
 import Entypo from 'react-native-vector-icons/Entypo';
-
+import { baseGetRequest } from '../../hooks/requestHelper';
+import { useFocusEffect } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function Tasks({ navigation }) {
     const screenWidth = Dimensions.get('window').width;
@@ -62,11 +63,31 @@ export default function Tasks({ navigation }) {
             color: '#ffffff'
         }
     })
-    const { tasksGoals } = getTasksOrGoals('tasks');
+    const [tasks, setTasks] = useState([]);
+    const [animate, setAnimate] = useState(true);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            let isActive = true;
+
+            const fetchData = async () => {
+                const { data } = await baseGetRequest('tasks');
+
+                if (isActive) {
+                    setTasks(data);
+                }
+            };
+            fetchData();
+            setAnimate(true);
+            return () => {
+                isActive = false;
+            };
+        }, [])
+    );
     const completed = [];
     const notCompleted = [];
-    if (tasksGoals !== undefined) {
-        tasksGoals.forEach(element => {
+    if (tasks !== undefined) {
+        tasks.forEach(element => {
             if (element.completed) {
                 completed.push(element);
             }
@@ -84,11 +105,23 @@ export default function Tasks({ navigation }) {
                         return <Task key={index} task={element} last={(index === notCompleted.length - 1) ? true : false} />
                     })}
                     {notCompleted.length === 0 &&
-                        <View style={{ ...styles.emptyWrapper, padding: 5 }}>
-                            <Text style={styles.emptyText}>No tasks found</Text>
-                            <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
-                        </View>
-                    }
+                        (
+                            <View>
+                                {setTimeout(() => {
+                                    setAnimate(false);
+                                }, 7000) &&
+                                    <View style={animate ? { ...styles.emptyWrapper, padding: 5 } : { display: 'none' }}>
+                                        <ActivityIndicator size={'large'} color='#ffffff' animating={animate} style={animate ? {} : { display: 'none' }} />
+                                    </View>
+                                }
+                                {!animate && <View style={{
+                                    ...styles.emptyWrapper, padding: 5, marginTop: 0, marginBottom: 0
+                                }}>
+                                    <Text style={styles.emptyText}>No tasks found</Text>
+                                    <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
+                                </View>}
+                            </View>
+                        )}
                 </View>
 
                 {completed.length > 0 && <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'left', width: screenWidth - 25 }}>Completed</Text>}

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import Goal from '../../models/Goal';
-import getTasksOrGoals from '../../hooks/getTasksOrGoals';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { baseGetRequest } from '../../hooks/requestHelper';
+import { useFocusEffect } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function Goals({ navigation }) {
   const screenWidth = Dimensions.get('window').width;
@@ -61,14 +63,33 @@ export default function Goals({ navigation }) {
       color: '#ffffff'
     }
   });
+  const [goals, setGoals] = useState([]);
+  const [animate, setAnimate] = useState(true);
 
-  const {tasksGoals} = getTasksOrGoals('goals');
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+
+      const fetchData = async () => {
+        const { data } = await baseGetRequest('goals');
+
+        if (isActive) {
+          setGoals(data);
+        }
+      };
+      fetchData();
+      setAnimate(true);
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   const completedGoals = [];
   const notCompletedGoals = [];
 
-  if (tasksGoals !== undefined) {
-    tasksGoals.forEach(element => {
+  if (goals !== undefined) {
+    goals.forEach(element => {
       if (element.completed) {
         completedGoals.push(element);
       } else {
@@ -88,12 +109,24 @@ export default function Goals({ navigation }) {
           {notCompletedGoals !== undefined && notCompletedGoals.map((element, index) => (
             <Goal key={index} goal={element} last={index === notCompletedGoals.length - 1} />
           ))}
-          {notCompletedGoals.length === 0 && (
-            <View style={{ ...styles.emptyWrapper, padding: 5 }}>
-              <Text style={styles.emptyText}>No goals found</Text>
-              <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
-            </View>
-          )}
+          {notCompletedGoals.length === 0 &&
+            (
+              <View>
+                {setTimeout(() => {
+                  setAnimate(false);
+                }, 7000) &&
+                  <View style={animate ? { ...styles.emptyWrapper, padding: 5 } : { display: 'none' }}>
+                    <ActivityIndicator size={'large'} color='#ffffff' animating={animate} style={animate ? {} : { display: 'none' }} />
+                  </View>
+                }
+                {!animate && <View style={{
+                  ...styles.emptyWrapper, padding: 5, marginTop: 0, marginBottom: 0
+                }}>
+                  <Text style={styles.emptyText}>No goals found</Text>
+                  <Entypo name='emoji-sad' color={'#ffffff'} size={35} />
+                </View>}
+              </View>
+            )}
         </View>
 
         {hasCompletedGoals && (
