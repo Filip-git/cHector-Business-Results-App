@@ -3,6 +3,7 @@ import { StyleSheet, SafeAreaView, Text, View, TextInput, Button, ScrollView, Di
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { UserContext } from '../context/userContext';
 import { basePostRequest } from '../hooks/requestHelper';
+import { ActivityIndicator } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
 export default function Login({ navigation }) {
 
   const [hidePass, setHidePass] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     username: '',
@@ -131,7 +133,8 @@ export default function Login({ navigation }) {
     if (valid) {
       setUsername(user.username);
       setPassword(user.password);
-      var logged = await basePostRequest('user', user);
+      setLoading(true);
+      var logged = await basePostRequest('login', user).finally(() => { setLoading(false); })
       if (logged.receivedData !== null) {
         navigation.navigate('cHector');
       }
@@ -141,6 +144,15 @@ export default function Login({ navigation }) {
 
     }
   }
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size={'large'} color='#4A3780' animating={loading} />
+        <Text style={{...styles.loginText,marginTop: 15}}>Logging you in</Text>
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -185,7 +197,6 @@ export default function Login({ navigation }) {
           </View>
           <View style={styles.bottomButtons}>
             <Text onPress={() => {
-              //TODO: Implement forgot password form
               Alert.alert("Something went wrong", "Try again later!");
             }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
             <View style={{

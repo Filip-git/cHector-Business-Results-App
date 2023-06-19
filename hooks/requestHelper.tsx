@@ -3,10 +3,17 @@ import axios from 'axios';
 
 const baseUrl = 'http://10.0.2.2:8080/';
 
+function abortSignal(timeoutMs: number) {
+    const abortController = new AbortController();
+    setTimeout(() => abortController.abort(), timeoutMs || 0);
+  
+    return abortController.signal;
+  }
+
 const baseGetRequest = async (endpoint: string) => {
     const url = baseUrl + endpoint;
     let data = [];
-    const response = await axios.get(url).catch(function (error) {
+    const response = await axios.get(url,{signal: abortSignal(10000)}).catch(function (error) {
         if (error.response) {
             console.log(error.response.data);
             console.log(error.response.status);
@@ -29,8 +36,7 @@ const basePostRequest = async (endpoint: string, body: any) => {
 
     const url = baseUrl + endpoint;
     var receivedData = null;
-
-    const response = await axios.post(url, body).catch(function (error) {
+    const response = await axios.post(url,body,{signal: abortSignal(10000)}).catch(function (error) {
         if (error.response) {
             console.log(error.response.data);
             console.log(error.response.status);
