@@ -110,7 +110,7 @@ export default function Login({ navigation }) {
     username: '',
     password: ''
   })
-  const { setUsername, setPassword } = useContext(UserContext);
+  const { setUsername, setPassword, setUserId, setEmail, setPhone } = useContext(UserContext);
   const handleChange = (text, field) => {
     setUser((prevState) => ({ ...prevState, [field]: text }));
   }
@@ -134,8 +134,11 @@ export default function Login({ navigation }) {
       setUsername(user.username);
       setPassword(user.password);
       setLoading(true);
-      var logged = await basePostRequest('login', user).finally(() => { setLoading(false); })
+      var logged = await basePostRequest('users/login', user).finally(() => { setLoading(false); })
       if (logged.receivedData !== null) {
+        setUserId(logged.receivedData.id);
+        setEmail(logged.receivedData.email);
+        setPhone(logged.receivedData.phone);
         navigation.navigate('cHector');
       }
       else {
@@ -148,7 +151,7 @@ export default function Login({ navigation }) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size={'large'} color='#4A3780' animating={loading} />
-        <Text style={{...styles.loginText,marginTop: 15}}>Logging you in</Text>
+        <Text style={{ ...styles.loginText, marginTop: 15 }}>Logging you in</Text>
       </View>
     )
   }

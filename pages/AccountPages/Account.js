@@ -1,8 +1,11 @@
 import { StyleSheet, SafeAreaView, Text, View, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { UserContext } from '../../context/userContext'
+import { useFocusEffect } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
+import { baseGetRequest } from '../../hooks/requestHelper';
+
 
 export default function Account({ navigation }) {
   const screenWidth = Dimensions.get('window').width;
@@ -59,7 +62,36 @@ export default function Account({ navigation }) {
 
   });
 
-  const { logOut } = useContext(UserContext);
+  const { userId, username, setUsername, email, setEmail, phone, setPhone, logOut } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+      setLoading(true);
+
+      const fetchData = async () => {
+        const url = "users/" + userId;
+        const { data } = await baseGetRequest(url).finally(()=> {setLoading(false); });
+        if (isActive && data !== null) {
+          setUsername(data.username);
+          setEmail(data.email);
+          setPhone(data.phone);
+        }
+      };
+      fetchData();
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
+  if(loading){
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size={'large'} color='#4A3780' animating={loading} />
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView>
@@ -79,22 +111,18 @@ export default function Account({ navigation }) {
           <View style={styles.accountDetailsWrapper}>
             <View style={styles.accountDetails}>
               <MaterialCommunityIcons name='account-outline' color={'#4A3780'} size={35} />
-              <Text style={styles.accountDetailsText}>John Doe</Text>
+              <Text style={styles.accountDetailsText}>{username}</Text>
 
             </View>
             <View style={styles.accountDetails}>
               <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
-              <Text style={styles.accountDetailsText}>062/328-552</Text>
+              <Text style={styles.accountDetailsText}>{phone}</Text>
 
             </View>
-            <View style={styles.accountDetails}>
-              <MaterialIcons name='date-range' color={'#4A3780'} size={35} />
-              <Text style={styles.accountDetailsText}>January 29th 1977</Text>
 
-            </View>
             <View style={styles.accountDetails}>
               <MaterialCommunityIcons name='email-outline' color={'#4A3780'} size={35} />
-              <Text style={styles.accountDetailsText}>john.doe@hotmail.com</Text>
+              <Text style={styles.accountDetailsText}>{email}</Text>
 
             </View>
 

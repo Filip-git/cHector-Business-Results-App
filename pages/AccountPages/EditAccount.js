@@ -1,7 +1,10 @@
 import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Keyboard } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useEffect } from 'react';
+import { basePutRequest } from '../../hooks/requestHelper';
+import { UserContext } from '../../context/userContext';
+
 
 
 
@@ -123,27 +126,23 @@ export default function EditAccount({ navigation, route }) {
             : undefined
     }, [navigation, route]);
     const [userEdit, setUserEdit] = useState({
-        name: '',
+        username: '',
         email: '',
-        phone: '',
-        password: '',
-        confirmPass: ''
+        phone: ''
     });
     const [errors, setErrors] = useState({
-        name: '',
+        username: '',
         email: '',
-        phone: '',
-        password: '',
-        confirmPass: ''
+        phone: ''
     });
-    const [hidePass, setHidePass] = useState(true);
-    const [hidePassConf, setHidePassConf] = useState(true);
 
-    const validate = () => {
+    const { userId } = useContext(UserContext);
+
+    const validate = async () => {
         Keyboard.dismiss();
         var valid = true;
-        if (!userEdit.name) {
-            handleError('Please enter your name !', 'name');
+        if (!userEdit.username) {
+            handleError('Please enter your username !', 'username');
             valid = false;
         }
         if (!userEdit.phone) {
@@ -157,35 +156,31 @@ export default function EditAccount({ navigation, route }) {
             handleError('Please enter a valid email !', 'email');
             valid = false;
         }
-        if (!userEdit.password) {
-            handleError('Please enter a new password !', 'password');
-            valid = false;
-        } else if (userEdit.password !== userEdit.confirmPass) {
-            handleError('Password and confirmation don\'t match !', 'password');
-            valid = false;
-        }
 
-        if (!userEdit.confirmPass) {
-            handleError('Please confirm your password !', 'confirmPass');
-            valid = false;
-        } else if (userEdit.confirmPass !== userEdit.password) {
-            handleError('Password and confirmation don\'t match !', 'confirmPass');
-            valid = false;
-        }
+
         if (valid) {
-            //TODO: Send request
-
-
-            handleError(null, 'name');
-            handleError(null, 'phone');
+            handleError(null, 'username');
             handleError(null, 'email');
-            handleError(null, 'password');
-            handleError(null, 'confirmPass');
+            handleError(null, 'phone');
 
-            Alert.alert("Edit successful", "You have successfully edited your profile !")
+            var editedUser = await basePutRequest('users/' + userId, userEdit);
+            if (editedUser.receivedData !== null) {
+                Alert.alert("Edit successful", "You have successfully edited your profile !",
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('AccountStack'),
+                            style: 'default'
+                        }
+                    ]);
+            }
+            else {
+                Alert.alert("Edit failed", "Something went wrong, try again later !");
+            }
         }
 
     }
+
     const handleChange = (text, field) => {
         setUserEdit((prevState) => ({ ...prevState, [field]: text }))
     }
@@ -197,19 +192,19 @@ export default function EditAccount({ navigation, route }) {
         <ScrollView>
             <View style={styles.container}>
                 <View style={styles.accountEditWrapper}>
-                    <View style={errors.name ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
+                    <View style={errors.username ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                         <MaterialCommunityIcons name='account-outline' color={'#4A3780'} size={35} />
                         <TextInput
-                            onChangeText={(text) => handleChange(text, 'name')}
-                            value={userEdit.name}
-                            placeholder='e.g. John Doe'
+                            onChangeText={(text) => handleChange(text, 'username')}
+                            value={userEdit.username}
+                            placeholder='e.g. JohnDoe'
                             style={styles.accountInputField}
                             onFocus={() => {
-                                handleError(null, 'name');
+                                handleError(null, 'username');
                             }}
                         />
                     </View>
-                    {errors.name && <Text style={styles.errorStyle}>{errors.name}</Text>}
+                    {errors.username && <Text style={styles.errorStyle}>{errors.username}</Text>}
 
                     <View style={errors.phone ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
                         <MaterialCommunityIcons name='phone' color={'#4A3780'} size={35} />
@@ -239,49 +234,11 @@ export default function EditAccount({ navigation, route }) {
                         />
                     </View>
                     {errors.email && <Text style={styles.errorStyle}>{errors.email}</Text>}
-
-                    <View style={errors.password ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                        <MaterialCommunityIcons name='lock-outline' color={'#4A3780'} size={35} />
-                        <TextInput
-                            onChangeText={(text) => handleChange(text, 'password')}
-                            value={userEdit.password}
-                            placeholder='Enter password'
-                            style={styles.accountInputPassField}
-                            secureTextEntry={hidePass}
-                            onFocus={() => {
-                                handleError(null, 'password');
-                            }}
-                        />
-                        <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
-                            <MaterialCommunityIcons name={hidePass ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
-                        </TouchableOpacity>
-                    </View>
-                    {errors.password && <Text style={styles.errorStyle}>{errors.password}</Text>}
-
-                    <View style={errors.confirmPass ? styles.accountEditInputWrapperError : styles.accountEditInputWrapper}>
-                        <MaterialCommunityIcons name='lock-check-outline' color={'#4A3780'} size={35} />
-                        <TextInput
-                            onChangeText={(text) => handleChange(text, 'confirmPass')}
-                            value={userEdit.confirmPass}
-                            placeholder='Confirm password'
-                            style={styles.accountInputPassField}
-                            secureTextEntry={hidePassConf}
-                            onFocus={() => {
-                                handleError(null, 'confirmPass');
-                            }}
-                        />
-                        <TouchableOpacity onPress={() => setHidePassConf(!hidePassConf)}>
-                            <MaterialCommunityIcons name={hidePassConf ? 'eye-off-outline' : 'eye-outline'} color={'#4A3780'} size={25} />
-                        </TouchableOpacity>
-                    </View>
-                    {errors.confirmPass !== null && <Text style={styles.errorStyle}>{errors.confirmPass}</Text>}
-
                 </View>
                 <View style={{
                     width: 358
                 }}>
                     <TouchableOpacity style={styles.submitButton} onPress={() => {
-                        //TODO: Send request and update user data
                         validate();
                     }}>
                         <Text style={styles.submitButtonText}>Save changes</Text>
