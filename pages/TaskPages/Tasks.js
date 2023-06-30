@@ -1,8 +1,8 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert } from 'react-native'
 import React, { useState } from 'react'
 import Task from '../../models/Task';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { baseGetRequest } from '../../hooks/requestHelper';
+import { baseGetRequest, basePutRequest } from '../../hooks/requestHelper';
 import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -65,6 +65,27 @@ export default function Tasks({ navigation }) {
     })
     const [tasks, setTasks] = useState([]);
     const [animate, setAnimate] = useState(true);
+    const [reloadTasks, setReloadTasks] = useState();
+
+    const completeTheTask = async (id, task) => {
+        const url = 'tasks/' + id;
+        const updateTask = task;
+        updateTask.completed = true;
+        const updated = await basePutRequest(url, updateTask);
+        if (updated.receivedData !== null) {
+            Alert.alert("Task completed", "You have successfully completed " + updated.receivedData.title + " !",
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => setReloadTasks(updated.receivedData),
+                        style: 'default'
+                    }
+                ]);
+        }
+        else {
+            Alert.alert("Task couldn't be completed", "Something went wrong, try again later !");
+        }
+    }
 
     useFocusEffect(
         React.useCallback(() => {
@@ -82,7 +103,7 @@ export default function Tasks({ navigation }) {
             return () => {
                 isActive = false;
             };
-        }, [])
+        }, [reloadTasks])
     );
     const completed = [];
     const notCompleted = [];
@@ -102,7 +123,23 @@ export default function Tasks({ navigation }) {
             <View style={styles.container}>
                 <View style={notCompleted.length > 0 ? styles.tasksWrapper : styles.emptyWrapper}>
                     {notCompleted !== undefined && notCompleted.map((element, index) => {
-                        return <Task key={index} task={element} last={(index === notCompleted.length - 1) ? true : false} />
+                        return <TouchableOpacity key={index} onPress={() => {
+                            Alert.alert("Task completed ?", "Would you like to mark " + element.title + " as completed ?",
+                                [
+                                    {
+                                        text: 'Yes',
+                                        onPress: async () => await completeTheTask(element.id, element),
+                                        style: 'default'
+                                    },
+                                    {
+                                        text: 'No',
+                                        onPress: () => { },
+                                        style: 'cancel'
+                                    }
+                                ]);
+                        }}>
+                            <Task key={index} task={element} last={(index === notCompleted.length - 1) ? true : false} />
+                        </TouchableOpacity>
                     })}
                     {notCompleted.length === 0 &&
                         (

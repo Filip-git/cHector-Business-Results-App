@@ -129,6 +129,10 @@ export default function Login({ navigation }) {
       handleError('Please enter your password !', 'password');
       valid = false;
     }
+    else if(user.password.length < 5){
+      handleError('Not a valid password !', 'password');
+      valid = false;
+    }
 
     if (valid) {
       setUsername(user.username);
@@ -199,9 +203,6 @@ export default function Login({ navigation }) {
 
           </View>
           <View style={styles.bottomButtons}>
-            <Text onPress={() => {
-              Alert.alert("Something went wrong", "Try again later!");
-            }} style={{ marginBottom: 25, textDecorationLine: 'underline' }}>Forgot password?</Text>
             <View style={{
               width: 358
             }}>

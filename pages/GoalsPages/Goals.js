@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import Goal from '../../models/Goal';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { baseGetRequest } from '../../hooks/requestHelper';
+import { baseGetRequest, basePutRequest } from '../../hooks/requestHelper';
 import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -65,6 +65,27 @@ export default function Goals({ navigation }) {
   });
   const [goals, setGoals] = useState([]);
   const [animate, setAnimate] = useState(true);
+  const [reloadGoals, setReloadGoals] = useState();
+
+  const completeTheGoal = async (id, goal) => {
+    const url = 'goals/' + id;
+    const updateGoal = goal;
+    updateGoal.completed = true;
+    const updated = await basePutRequest(url, updateGoal);
+    if (updated.receivedData !== null) {
+      Alert.alert("Goal completed", "You have successfully completed " + updated.receivedData.title + " !",
+        [
+          {
+            text: 'OK',
+            onPress: () => setReloadGoals(updated.receivedData),
+            style: 'default'
+          }
+        ]);
+    }
+    else {
+      Alert.alert("Goal couldn't be completed", "Something went wrong, try again later !");
+    }
+  }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -82,7 +103,7 @@ export default function Goals({ navigation }) {
       return () => {
         isActive = false;
       };
-    }, [])
+    }, [reloadGoals])
   );
 
   const completedGoals = [];
@@ -106,9 +127,25 @@ export default function Goals({ navigation }) {
 
       <View style={styles.container}>
         <View style={hasNotCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
-          {notCompletedGoals !== undefined && notCompletedGoals.map((element, index) => (
-            <Goal key={index} goal={element} last={index === notCompletedGoals.length - 1} />
-          ))}
+          {notCompletedGoals !== undefined && notCompletedGoals.map((element, index) => {
+            return <TouchableOpacity key={index} onPress={() => {
+              Alert.alert("Goal completed ?", "Would you like to mark " + element.title + " as completed ?",
+                [
+                  {
+                    text: 'Yes',
+                    onPress: async () => await completeTheGoal(element.id, element),
+                    style: 'default'
+                  },
+                  {
+                    text: 'No',
+                    onPress: () => { },
+                    style: 'cancel'
+                  }
+                ]);
+            }}>
+              <Goal key={index} goal={element} last={index === notCompletedGoals.length - 1} />
+            </TouchableOpacity>
+          })}
           {notCompletedGoals.length === 0 &&
             (
               <View>
@@ -136,9 +173,9 @@ export default function Goals({ navigation }) {
         )}
 
         <View style={hasCompletedGoals ? styles.goalsWrapper : styles.emptyWrapper}>
-          {completedGoals !== undefined && completedGoals.map((element, index) => (
-            <Goal key={index} goal={element} last={index === completedGoals.length - 1} />
-          ))}
+          {completedGoals !== undefined && completedGoals.map((element, index) => {
+           return <Goal key={index} goal={element} last={index === completedGoals.length - 1} />
+          })}
         </View>
 
         <View style={{ width: screenWidth - 25 }}>
